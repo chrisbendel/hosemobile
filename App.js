@@ -50,11 +50,12 @@ export default class App extends Component {
                   <Scene key="Songs" component={Songs} title="Songs" />
                 </Content>
                 <Footer>
-                  <Player />
+                  
                 </Footer>
             </Drawer>
           </Scene>
         </Router>
+        <Player />
       </Container>
     );
   }
