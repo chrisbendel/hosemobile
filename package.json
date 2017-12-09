@@ -9,9 +9,13 @@
     "android": "react-native run-android"
   },
   "dependencies": {
+    "native-base": "^2.3.5",
     "react": "16.0.0",
     "react-native": "0.51.0",
-    "react-native-audio-toolkit": "^1.0.6"
+    "react-native-audio-toolkit": "^1.0.6",
+    "react-native-collapsible": "^0.9.0",
+    "react-native-vector-icons": "^4.4.2",
+    "react-navigation": "^1.0.0-beta.21"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",

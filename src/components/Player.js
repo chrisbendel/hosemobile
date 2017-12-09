@@ -4,17 +4,25 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
   Button
 } from 'react-native';
 import {
   Player as audio,
   MediaStates
 } from 'react-native-audio-toolkit';
+import Collapsible from 'react-native-collapsible';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Dimensions from 'Dimensions';
+
+const height = Dimensions.get('window').height;
+const width = Dimensions.get('window').width;
 
 export default class Player extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      collapsed: false,
     }
   }
 
@@ -27,24 +35,26 @@ export default class Player extends Component {
   }
 
   render() {
-
+    console.log(height);
+    console.log(this.state.collapsed);
     return (
-      <View style={styles.container}>
-        <Button title="Play" onPress={() => {
-          this.onPress();
-        }}> 
-          Play
-        </Button>
+      <View>
+        <Icon name="ios-list" 
+          size={75} 
+          color="#4F8EF7" 
+          onPress={() => {
+            
+          }}/>
       </View>
-    );
+    )
   }
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: 'center'
   }
-});
+}
+
