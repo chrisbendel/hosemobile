@@ -11,7 +11,6 @@ import {
   Player as audio,
   MediaStates
 } from 'react-native-audio-toolkit';
-import Collapsible from 'react-native-collapsible';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Dimensions from 'Dimensions';
 
@@ -22,7 +21,6 @@ export default class Player extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      collapsed: false,
     }
   }
 
@@ -35,15 +33,13 @@ export default class Player extends Component {
   }
 
   render() {
-    console.log(height);
-    console.log(this.state.collapsed);
     return (
       <View>
         <Icon name="ios-list" 
-          size={75} 
+          size={50} 
           color="#4F8EF7" 
           onPress={() => {
-            
+
           }}/>
       </View>
     )

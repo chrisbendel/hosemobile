@@ -14,7 +14,7 @@ export default class Shows extends Component {
   render() {
     return (
       <View>
-        <Text> Shows </Text>
+        <Text> Songs </Text>
       </View>
     );
   }
