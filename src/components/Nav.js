@@ -1,25 +1,48 @@
-import React, {Component} from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import {Icon} from 'native-base';
-import Drawer from 'react-native-drawer'
+import React from "react";
+import { AppRegistry, Image, StatusBar } from "react-native";
+import {
+  Button,
+  Text,
+  Container,
+  List,
+  ListItem,
+  Content,
+  Icon
+} from "native-base";
+const routes = ["Shows", "Songs"];
 
-export default class Nav extends Component {
+export default class Nav extends React.Component {
   render() {
-    return(
-      <Drawer
-        type="overlay"
-        content={<SideDrawerContent />}
-        tapToClose={true}
-        openDrawerOffset={0.2} 
-        panCloseMask={0.2}
-        closedDrawerOffset={-3}
-        styles={{ drawer: drawerStyle, main: mainStyle }}
-        tweenHandler={(ratio) => ({ main: { opacity: (2 - ratio) / 2 } })}
-      >
-        {React.Children.map(this.props.children, c => React.cloneElement(c, {
-          route: this.props.route
-        }))}
-      </Drawer>
+    return (
+      <Container>
+        <Content>
+          <Image
+            source={{
+              uri: "https://github.com/GeekyAnts/NativeBase-KitchenSink/raw/react-navigation/img/drawer-cover.png"
+            }}
+            style={{
+              height: 120,
+              alignSelf: "stretch",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+          </Image>
+          <List
+            dataArray={routes}
+            renderRow={data => {
+              return (
+                <ListItem
+                  button
+                  onPress={() => this.props.navigation.navigate(data)}
+                >
+                  <Text>{data}</Text>
+                </ListItem>
+              );
+            }}
+          />
+        </Content>
+      </Container>
     );
   }
 }
