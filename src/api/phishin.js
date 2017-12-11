@@ -1,8 +1,10 @@
+import {AsyncStorage} from 'react-native';
 const base = 'https://phish.in/api/v1/'
 
 // var myHeaders = new Headers();
 
 // myHeaders.append('Content-Type', 'application/json');
+
 
 export const login = async() => {
   fetch('http://phish.in/api/v1/users/sign_in', {
@@ -21,12 +23,12 @@ export const login = async() => {
 }
 
 export const randomShow = async() => {
-  let data = await (await fetch(base + 'random-show')).json();
+  let data = await (await cachedFetch(base + 'random-show')).json();
   return data.data;
 }
 
 export const show = async(id) => {
-  let data = await (await fetch(base + 'shows/' + id)).json();
+  let data = await (await cachedFetch(base + 'shows/' + id)).json();
   return data.data;
 }
 
@@ -36,52 +38,52 @@ export const testFunc = async() => {
 }
 
 export const shows = async(page = 1) => {
-  let data = await (await fetch(base + 'shows?sort_attr=date&sort_dir=desc&per_page=10&page=' + page)).json();
+  let data = await (await cachedFetch(base + 'shows?sort_attr=date&sort_dir=desc&per_page=10&page=' + page)).json();
   return data.data;
 }
 
 export const tracksForSong = async(track) => {
-  let data = await (await fetch(base + 'songs/' + track)).json();
+  let data = await (await cachedFetch(base + 'songs/' + track)).json();
   return data.data.tracks;
 }
 
 export const showsForVenue = async(venue) => {
-  let data = await (await fetch(base + 'venues/' + venue)).json();
+  let data = await (await cachedFetch(base + 'venues/' + venue)).json();
   return data.data.show_ids;
 }
 
 export const showsForYear = async(year) => {
-  let data = await (await fetch(base + 'years/' + year)).json();
+  let data = await (await cachedFetch(base + 'years/' + year)).json();
   return data.data;
 }
 
 export const showsForTour = async(tour) => {
-  let data = await (await fetch(base + 'tours/' + tour)).json();
+  let data = await (await cachedFetch(base + 'tours/' + tour)).json();
   return data.data.shows;
 }
 
 export const showsToday = async(day) => {
-  let data = await (await fetch(base + 'shows-on-day-of-year/' + day)).json();
+  let data = await (await cachedFetch(base + 'shows-on-day-of-year/' + day)).json();
   return data.data;
 }
 
 export const years = async() => {
-  let data = await (await fetch(base + 'years')).json();
+  let data = await (await cachedFetch(base + 'years')).json();
   return data.data;
 }
 
 export const tours = async() => {
-  let data = await (await fetch(base + 'tours?sort_attr=starts_on&per_page=1000')).json();
+  let data = await (await cachedFetch(base + 'tours?sort_attr=starts_on&per_page=1000')).json();
   return data.data;
 }
 
 export const venues = async() => {
-  let data = await (await fetch(base + 'venues?per_page=1000&sort_attr=shows_count&sort_dir=desc')).json();
+  let data = await (await cachedFetch(base + 'venues?per_page=1000&sort_attr=shows_count&sort_dir=desc')).json();
   return data.data;
 }
 
 export const tracks = async() => {
-  let data = await (await fetch(base + 'tracks')).json();
+  let data = await (await cachedFetch(base + 'tracks')).json();
   return data.data;
 }
 
@@ -155,4 +157,56 @@ export const search = async(query) => {
   }
 
   return terms;
+}
+
+const cachedFetch = (url, options) => {
+  let expiry = 5 * 60 // 5 min default
+  if (typeof options === 'number') {
+    expiry = options
+    options = undefined
+  } else if (typeof options === 'object') {
+    // I hope you didn't set it to 0 seconds
+    expiry = options.seconds || expiry
+  }
+  
+  // Use the URL as the cache key to sessionStorage
+  let cacheKey = url
+  let cached = AsyncStorage.getItem(cacheKey)
+  let whenCached = AsyncStorage.getItem(cacheKey + ':ts')
+  if (cached !== null && whenCached !== null) {
+    // it was in sessionStorage! Yay!
+    // Even though 'whenCached' is a string, this operation
+    // works because the minus sign converts the
+    // string to an integer and it will work.
+    let age = (Date.now() - whenCached) / 1000
+    if (age < expiry) {
+      let response = new Response(new Blob([cached]))
+      return Promise.resolve(response)
+    } else {
+      // We need to clean up this old key
+      AsyncStorage.removeItem(cacheKey)
+      AsyncStorage.removeItem(cacheKey + ':ts')
+    }
+  }
+
+  return fetch(url, options).then(response => {
+    // let's only store in cache if the content-type is
+    // JSON or something non-binary
+    if (response.status === 200) {
+      let ct = response.headers.get('Content-Type')
+      if (ct && (ct.match(/application\/json/i) || ct.match(/text\//i))) {
+        // There is a .json() instead of .text() but
+        // we're going to store it in sessionStorage as
+        // string anyway.
+        // If we don't clone the response, it will be
+        // consumed by the time it's returned. This
+        // way we're being un-intrusive.
+        response.clone().text().then(content => {
+          AsyncStorage.setItem(cacheKey, content)
+          AsyncStorage.setItem(cacheKey+':ts', Date.now().toString())
+        })
+      }
+    }
+    return response
+  })
 }

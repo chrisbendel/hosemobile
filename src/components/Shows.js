@@ -22,9 +22,11 @@ import {
   Button,
   Icon
 } from 'native-base';
-import {shows} from './../api/phishin';
+import {shows, showsForYear, showsToday, showsForVenue, showsForTour} from './../api/phishin';
 import ModalFilterPicker from 'react-native-modal-filter-picker';
 import { Actions } from 'react-native-router-flux';
+import {yearFilters} from './../Filters';
+import {CachedImage} from "react-native-img-cache";
 
 const width = Dimensions.get('window').width;
 
@@ -35,19 +37,41 @@ export default class Shows extends Component {
     this.state = {
       shows: null,
       page: 1,
-      loadingShows: false
+      loadingShows: false,
+      filter: null,
+      filterVisible: false,
+      filterOptions: null,
+      filterType: null
+    }
+  }
+  
+  componentWillMount() {
+    this.fetchShows();
+  }
+
+  getFilteredData = (type = null, id = null) => {
+    switch (type) {
+      case 'year':
+
+        break;
+      case 'venue':
+
+        break;
+      case 'tour':
+
+        break;
+      default:
+        this.fetchShows();
+        break;
     }
   }
 
-  componentWillMount() {
-    this.fetchShows(1);
-  }
-
-  fetchShows = (page) => {
+  fetchShows = (page = 1) => {
     shows(page).then(shows => {
       this.setState({
         shows: shows,
-        page: page
+        page: page,
+        filterOptions: null
       })
     })
   }
@@ -65,10 +89,43 @@ export default class Shows extends Component {
     })
   }
 
+  onShow = (options, filterType) => {
+    this.setState({ 
+      filterVisible: true, 
+      filterOptions: options,
+      filterType
+    });
+  }
+
+  onSelect = (picked) => {
+    let info = this.state.filterOptions.find(x => x.key === picked);
+    switch (this.state.filterType) {
+      case 'years': 
+        showsForYear(info.key).then(shows => {
+          this.setState({
+            shows: shows,
+            filterVisible: false
+          })
+        })
+        break;
+    }
+    Actions.refresh({title: info.label})
+    this.setState({
+      filter: picked,
+      
+    })
+  }
+
+  onCancel = () => {
+    this.setState({
+      filterVisible: false
+    });
+  }
+
   onScroll = (e) => {
     let el = e.nativeEvent;
     if (el.contentSize.height - 100 <= el.contentOffset.y + el.layoutMeasurement.height) {
-      if (!this.state.loadingShows) {
+      if (!this.state.loadingShows && !this.state.filterOptions) {
         this.loadMoreShows();
       }
     }
@@ -76,19 +133,18 @@ export default class Shows extends Component {
 
   renderRow = (item) => {
     let show = item.item;
-    console.log(show);
     return (
       <TouchableOpacity onPress={() => {Actions.show()}} key={show.date} style={styles.item}>
         <Card>
           <CardItem cardBody>
-            <Image
+            <CachedImage
               source={{uri: 'https://s3.amazonaws.com/hose/images/' + show.date + '.jpg'}}
               style={styles.showImage}
             />
           </CardItem>
           <CardItem>
             <Body>
-            <Text style={{fontSize: 10}}>
+              <Text style={{fontSize: 10}}>
                 {show.date}
               </Text>
               <Text style={{fontSize: 10}}>
@@ -114,8 +170,16 @@ export default class Shows extends Component {
 
     return (
       <Container>
+        <ModalFilterPicker
+          visible={this.state.filterVisible}
+          onSelect={(picked) => {this.onSelect(picked)}}
+          onCancel={this.onCancel}
+          options={this.state.filterOptions ? this.state.filterOptions : []}
+        />
         <View style={styles.filters}>
-          <Button>
+          <Button title="Years" onPress={() => {
+            this.onShow(yearFilters, 'years');
+          }}>
             <Text>Years</Text>
           </Button>
           <Button>
@@ -125,9 +189,10 @@ export default class Shows extends Component {
             <Text>Tours</Text>
           </Button>
           <Button>
-            <Text>Years</Text>
+            <Text>Sort</Text>
           </Button>
-        </View> 
+        </View>
+
         <FlatList
           contentContainerStyle={styles.list}
           onScroll={this.onScroll}
@@ -152,8 +217,15 @@ var styles = StyleSheet.create({
     height: 250
   },
   showImage: {
-    height: 175,
-    width: width/2 - 20
+    // height: 175,
+    // width: width/2 - 20
+    flex: 1,
+    aspectRatio: 1,
+    resizeMode: 'contain'
+  },
+  filterTitle: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   filters: {
     flexDirection: 'row',

@@ -30,16 +30,21 @@ export default class Sidebar extends Component {
             <Body >
               <Text>On This Day</Text>
             </Body>
-          </ListItem>
-          <ListItem icon onPress={()=>{Actions.profile()}}>
+          </ListItem> */}
+          <ListItem icon onPress={() => {
+              Actions.show({id: 'random'})
+            }}>
             <Left>
               <Icon name="person" />
             </Left>
             <Body>
               <Text>Random Show</Text>
             </Body>
-          </ListItem> */}
-          <ListItem icon onPress={()=>{Actions.reset('shows')}}>
+          </ListItem>
+          <ListItem icon onPress={()=> {
+              Actions.showStuff()
+              Actions.shows({type: 'reset'});
+            }}>
             <Left>
               <Icon name="ios-albums" />
             </Left>
@@ -47,7 +52,10 @@ export default class Sidebar extends Component {
               <Text>Shows</Text>
             </Body>
           </ListItem>
-          <ListItem icon onPress={()=>{Actions.songs()}}>
+          <ListItem icon onPress={()=>{
+              Actions.songStuff();
+              Actions.songs({type: 'reset'})
+            }}>
             <Left>
               <Icon name="ios-musical-notes" />
             </Left>

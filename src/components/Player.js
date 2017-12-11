@@ -13,7 +13,7 @@ import {
 } from 'react-native-audio-toolkit';
 import MusicControl from 'react-native-music-control';
 import Sound from 'react-native-sound';
-
+import EventEmitter from "react-native-eventemitter";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Dimensions from 'Dimensions';
 
@@ -32,14 +32,14 @@ export default class Player extends Component {
   componentWillMount() {
     MusicControl.enableBackgroundMode(true);
     this.player = new Audio();
-    this.whoosh = new Sound('https://phish.in/audio/000/019/097/19097.mp3', '', (error) => {
-      if (error) {
-        console.log('failed to load the sound', error);
-      } else {
-        this.setState({loading: false})
-        console.log('Sound loaded');
-      }
-    });
+    // this.whoosh = new Sound('https://phish.in/audio/000/019/097/19097.mp3', '', (error) => {
+    //   if (error) {
+    //     console.log('failed to load the sound', error);
+    //   } else {
+    //     this.setState({loading: false})
+    //     console.log('Sound loaded');
+    //   }
+    // });
 
     MusicControl.on('play', this.play)
     MusicControl.on('pause', this.pause)
