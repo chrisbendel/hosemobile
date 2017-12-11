@@ -15,15 +15,17 @@ import {
   Footer,
   Header,
   Tab,
+  // Drawer,
   Tabs,
   Title,
   Left,
   Icon,
   Right
-} from "native-base"
-import { DrawerNavigator } from 'react-navigation';
+} from "native-base";
+import { Actions, Router, Scene, Drawer } from 'react-native-router-flux';
 import Player from './src/components/Player';
 import Shows from './src/components/Shows';
+import Show from './src/components/Show';
 import Songs from './src/components/Songs';
 import Nav from './src/components/Nav';
 
@@ -34,21 +36,28 @@ export default class App extends Component {
     super(props);
   }
 
+  closeDrawer = () => {
+    this.drawer._root.close()
+  };
+
+  openDrawer = () => {
+    this.drawer._root.open()
+  };
+
   render() {
     return (
       <Container>
-        <Header hasTabs/>
-        <Tabs initialPage={1}>
-          <Tab heading="Shows">
-            <Shows />
-          </Tab>
-          <Tab heading="Songs">
-            <Songs />
-          </Tab>
-        </Tabs>
-      
-        <Footer>
-          <Player />
+        <Router>
+          <Drawer drawerIcon={<Icon style={{margin: -10, marginRight: 5, fontSize: 40}} name="ios-menu"/>} drawerPosition="right" key="drawer" contentComponent={Nav}>
+            <Scene key="showStuff">
+              <Scene key="shows" component={Shows} title="Shows"/>
+              <Scene key="show" component={Show} title="Show"/>
+            </Scene>
+            <Scene key="songs" component={Songs} title="Songs"/>
+          </Drawer>
+        </Router>
+        <Footer style={{height: 75}}>
+          <Player/>
         </Footer>
       </Container>
     );

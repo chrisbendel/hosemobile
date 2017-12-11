@@ -1,48 +1,62 @@
-import React from "react";
-import { AppRegistry, Image, StatusBar } from "react-native";
+import React, { Component } from 'react';
 import {
-  Button,
-  Text,
-  Container,
+  View,
+  Image
+} from 'react-native';
+
+import {Actions} from 'react-native-router-flux';
+
+import {
+  Content,
   List,
   ListItem,
-  Content,
-  Icon
-} from "native-base";
-const routes = ["Shows", "Songs"];
+  Text,
+  Icon,
+  Left,
+  Body,
+  Right,
+  Thumbnail
+} from 'native-base';
 
-export default class Nav extends React.Component {
+export default class Sidebar extends Component {
   render() {
     return (
-      <Container>
-        <Content>
-          <Image
-            source={{
-              uri: "https://github.com/GeekyAnts/NativeBase-KitchenSink/raw/react-navigation/img/drawer-cover.png"
-            }}
-            style={{
-              height: 120,
-              alignSelf: "stretch",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-          </Image>
-          <List
-            dataArray={routes}
-            renderRow={data => {
-              return (
-                <ListItem
-                  button
-                  onPress={() => this.props.navigation.navigate(data)}
-                >
-                  <Text>{data}</Text>
-                </ListItem>
-              );
-            }}
-          />
-        </Content>
-      </Container>
+      <Content style={{paddingTop: 100, backgroundColor: '#FFFFFF'}}>
+        <List>
+          {/* <ListItem icon onPress={()=>{Actions.passbook()}}>
+            <Left>
+              <Icon name="paper" />
+            </Left>
+            <Body >
+              <Text>On This Day</Text>
+            </Body>
+          </ListItem>
+          <ListItem icon onPress={()=>{Actions.profile()}}>
+            <Left>
+              <Icon name="person" />
+            </Left>
+            <Body>
+              <Text>Random Show</Text>
+            </Body>
+          </ListItem> */}
+          <ListItem icon onPress={()=>{Actions.reset('shows')}}>
+            <Left>
+              <Icon name="ios-albums" />
+            </Left>
+            <Body>
+              <Text>Shows</Text>
+            </Body>
+          </ListItem>
+          <ListItem icon onPress={()=>{Actions.songs()}}>
+            <Left>
+              <Icon name="ios-musical-notes" />
+            </Left>
+            <Body>
+              <Text>Songs</Text>
+            </Body>
+          </ListItem>
+        </List>
+      </Content>
     );
   }
 }

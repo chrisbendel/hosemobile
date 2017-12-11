@@ -6,7 +6,7 @@ import {
   View
 } from 'react-native';
 
-export default class Songs extends Component {
+export default class Show extends Component {
   constructor(props) {
     super(props);
   }
