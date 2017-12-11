@@ -23,15 +23,19 @@ export default class Sidebar extends Component {
     return (
       <Content style={{paddingTop: 100, backgroundColor: '#FFFFFF'}}>
         <List>
-          {/* <ListItem icon onPress={()=>{Actions.passbook()}}>
+          <ListItem icon onPress={() => {
+              Actions.showStuff();
+              Actions.shows({type: 'random'});
+            }}>
             <Left>
               <Icon name="paper" />
             </Left>
             <Body >
               <Text>On This Day</Text>
             </Body>
-          </ListItem> */}
+          </ListItem>
           <ListItem icon onPress={() => {
+              Actions.showStuff();
               Actions.show({id: 'random'})
             }}>
             <Left>
@@ -41,7 +45,7 @@ export default class Sidebar extends Component {
               <Text>Random Show</Text>
             </Body>
           </ListItem>
-          <ListItem icon onPress={()=> {
+          <ListItem icon onPress={() => {
               Actions.showStuff()
               Actions.shows({type: 'reset'});
             }}>
@@ -52,7 +56,7 @@ export default class Sidebar extends Component {
               <Text>Shows</Text>
             </Body>
           </ListItem>
-          <ListItem icon onPress={()=>{
+          <ListItem icon onPress={() => {
               Actions.songStuff();
               Actions.songs({type: 'reset'})
             }}>

@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Platform,
   StyleSheet,
   View,
-  Image,
   Dimensions,
   TouchableOpacity,
   FlatList
@@ -13,7 +11,6 @@ import {
   ListItem,
   Text,
   Container, 
-  Spinner, 
   Card, 
   CardItem,
   Left, 
@@ -25,10 +22,15 @@ import {
 import {shows, showsForYear, showsToday, showsForVenue, showsForTour, show} from './../api/phishin';
 import ModalFilterPicker from 'react-native-modal-filter-picker';
 import { Actions } from 'react-native-router-flux';
-import {yearFilters, tourFilters, venueFilters} from './../Filters';
+import {yearFilters, tourFilters, venueFilters, sortByOptions, showJamcharts} from './../Filters';
 import {CachedImage} from "react-native-img-cache";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const width = Dimensions.get('window').width;
+
+const isJamchart = (id) => {
+  return (showJamcharts.indexOf(id) !== -1);
+}
 
 export default class Shows extends Component {
   constructor(props) {
@@ -37,7 +39,8 @@ export default class Shows extends Component {
     this.state = {
       shows: null,
       page: 1,
-      loadingShows: false,
+      loading: false,
+      fetchingMoreShows: false,
       filterVisible: false,
       filterOptions: null,
       filterType: null
@@ -45,27 +48,30 @@ export default class Shows extends Component {
   }
   
   componentWillMount() {
+    console.log(this.props);
     this.fetchShows();
   }
 
   fetchShows = (page = 1) => {
+    this.setState({loading: true});
     shows(page).then(shows => {
       this.setState({
         shows: shows,
         page: page,
         filterOptions: null,
         filterVisible: false,
+        loading: false
       })
     })
   }
 
   loadMoreShows = () => {
-    this.setState({loadingShows: true});
+    this.setState({fetchingMoreShows: true});
     let page = this.state.page + 1;
 
     shows(page).then(shows => {
       this.setState(previousState => ({
-        loadingShows: false,
+        fetchingMoreShows: false,
         page: page,
         shows: [...previousState.shows, ...shows]
       }));
@@ -81,6 +87,7 @@ export default class Shows extends Component {
   }
 
   onSelect = (picked) => {
+    this.setState({loading: true});
     let info = this.state.filterOptions.find(x => x.key === picked);
     switch (this.state.filterType) {
       case 'years': 
@@ -90,7 +97,8 @@ export default class Shows extends Component {
           showsForYear(info.key).then(shows => {
             this.setState({
               shows: shows.reverse(),
-              filterVisible: false
+              filterVisible: false,
+              loading: false
             });
           });
         }
@@ -107,7 +115,8 @@ export default class Shows extends Component {
           Promise.all(promises).then(data => {
             this.setState({
               shows: data.reverse(),
-              filterVisible: false
+              filterVisible: false,
+              loading: false
             })
           })
         });
@@ -116,16 +125,13 @@ export default class Shows extends Component {
         showsForTour(info.key).then(shows => {
           this.setState({
             shows: shows.reverse(),
-            filterVisible: false
+            filterVisible: false,
+            loading: false
           });
         });
         break;
     }
     Actions.refresh({title: info.label})
-    this.setState({
-      filter: picked,
-      
-    })
   }
 
   onCancel = () => {
@@ -137,7 +143,7 @@ export default class Shows extends Component {
   onScroll = (e) => {
     let el = e.nativeEvent;
     if (el.contentSize.height - 100 <= el.contentOffset.y + el.layoutMeasurement.height) {
-      if (!this.state.loadingShows && !this.state.filterOptions) {
+      if (!this.state.fetchingMoreShows && !this.state.filterOptions) {
         this.loadMoreShows();
       }
     }
@@ -147,42 +153,38 @@ export default class Shows extends Component {
     let show = item.item;
     return (
       <TouchableOpacity onPress={() => {Actions.show()}} key={show.date} style={styles.item}>
-        <Card>
+        <Card >
           <CardItem cardBody>
             <CachedImage
               source={{uri: 'https://s3.amazonaws.com/hose/images/' + show.date + '.jpg'}}
               style={styles.showImage}
             />
           </CardItem>
-          <CardItem>
-            <Body>
-              {show.venue ?
-                <View>
-                  <Text style={{fontSize: 10}}>
-                    {show.date}
-                  </Text>
-                  <Text style={{fontSize: 10}}>
-                    {show.venue.name}
-                  </Text>
-                  <Text style={{fontSize: 10}}>
-                    {show.venue.location}
-                  </Text>
-                </View>
-              :
-                <View>
-                  <Text style={{fontSize: 10}}>
-                    {show.date}
-                  </Text>
-                  <Text style={{fontSize: 10}}>
-                    {show.venue_name}
-                  </Text>
-                  <Text style={{fontSize: 10}}>
-                    {show.location}
-                  </Text>
-                </View>
-              }
-            </Body>
-          </CardItem>
+          <View style={styles.showText}>
+            <Text style={{fontSize: 12}}>
+              {show.date}
+            </Text>
+            {show.venue ?
+            <View>
+            <Text note style={{fontSize: 12}}>
+              {show.venue.name}
+              {show.venue.location}
+            </Text>
+            <Text style={{fontSize: 10}}>
+              {show.venue.location}
+            </Text>
+            </View>
+            :
+            <View>
+            <Text numberOfLines={1} style={{fontSize: 10}}>
+              {show.venue_name}
+            </Text>
+            <Text numberOfLines={1} style={{fontSize: 10}}>
+              {show.location}
+            </Text>
+            </View>
+          }
+          </View>
         </Card>
       </TouchableOpacity>
     );  
@@ -190,14 +192,17 @@ export default class Shows extends Component {
 
   render() {
     let shows = this.state.shows;
-    if (!shows) {
+
+    if (!shows || this.state.loading) {
       return (
-        <Text> Loading ... </Text>
+        <View style={{ flex: 1 }}>
+          <Spinner visible={this.state.loading} textStyle={{color: '#FFF'}} />
+        </View>
       );
     }
 
     return (
-      <Container>
+      <Container style={{padding: 0}}>
         <ModalFilterPicker
           visible={this.state.filterVisible}
           onSelect={(picked) => {this.onSelect(picked)}}
@@ -220,16 +225,13 @@ export default class Shows extends Component {
           }}>
             <Text>Tours</Text>
           </Button>
-          <Button>
-            <Text>Sort</Text>
-          </Button>
         </View>
 
         <FlatList
           contentContainerStyle={styles.list}
           onScroll={this.onScroll}
           data={shows}
-          numColumns={2}
+          numColumns={3}
           renderItem={this.renderRow}
           keyExtractor={(item, index) => index}
         />
@@ -244,20 +246,19 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   item: {
-    margin: 7.5,
-    width: width/2 - 15,
-    height: 250
+    margin: 2.5,
+    width: width / 3 - 5,
+    height: 175
+  },
+  showText: {
+    flex: 1,
+    height: 'auto',
+    padding: 5,
   },
   showImage: {
-    // height: 175,
-    // width: width/2 - 20
     flex: 1,
-    aspectRatio: 1,
-    resizeMode: 'contain'
-  },
-  filterTitle: {
-    justifyContent: 'center',
-    alignItems: 'center'
+    height: 100,
+    resizeMode: 'cover'
   },
   filters: {
     flexDirection: 'row',
