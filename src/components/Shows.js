@@ -22,10 +22,10 @@ import {
   Button,
   Icon
 } from 'native-base';
-import {shows, showsForYear, showsToday, showsForVenue, showsForTour} from './../api/phishin';
+import {shows, showsForYear, showsToday, showsForVenue, showsForTour, show} from './../api/phishin';
 import ModalFilterPicker from 'react-native-modal-filter-picker';
 import { Actions } from 'react-native-router-flux';
-import {yearFilters} from './../Filters';
+import {yearFilters, tourFilters, venueFilters} from './../Filters';
 import {CachedImage} from "react-native-img-cache";
 
 const width = Dimensions.get('window').width;
@@ -38,7 +38,6 @@ export default class Shows extends Component {
       shows: null,
       page: 1,
       loadingShows: false,
-      filter: null,
       filterVisible: false,
       filterOptions: null,
       filterType: null
@@ -49,29 +48,13 @@ export default class Shows extends Component {
     this.fetchShows();
   }
 
-  getFilteredData = (type = null, id = null) => {
-    switch (type) {
-      case 'year':
-
-        break;
-      case 'venue':
-
-        break;
-      case 'tour':
-
-        break;
-      default:
-        this.fetchShows();
-        break;
-    }
-  }
-
   fetchShows = (page = 1) => {
     shows(page).then(shows => {
       this.setState({
         shows: shows,
         page: page,
-        filterOptions: null
+        filterOptions: null,
+        filterVisible: false,
       })
     })
   }
@@ -101,12 +84,41 @@ export default class Shows extends Component {
     let info = this.state.filterOptions.find(x => x.key === picked);
     switch (this.state.filterType) {
       case 'years': 
-        showsForYear(info.key).then(shows => {
-          this.setState({
-            shows: shows,
-            filterVisible: false
+        if (info.key === 'all') {
+          this.fetchShows();
+        } else {
+          showsForYear(info.key).then(shows => {
+            this.setState({
+              shows: shows.reverse(),
+              filterVisible: false
+            });
+          });
+        }
+        break;
+      case 'venues':
+        showsForVenue(info.key).then(showIds => {
+          let promises = [];
+          showIds.forEach(id => {
+            promises.push(show(id).then(showInfo => {
+              return showInfo;
+            }));
+          });
+    
+          Promise.all(promises).then(data => {
+            this.setState({
+              shows: data.reverse(),
+              filterVisible: false
+            })
           })
-        })
+        });
+        break;
+      case 'tours':
+        showsForTour(info.key).then(shows => {
+          this.setState({
+            shows: shows.reverse(),
+            filterVisible: false
+          });
+        });
         break;
     }
     Actions.refresh({title: info.label})
@@ -144,15 +156,31 @@ export default class Shows extends Component {
           </CardItem>
           <CardItem>
             <Body>
-              <Text style={{fontSize: 10}}>
-                {show.date}
-              </Text>
-              <Text style={{fontSize: 10}}>
-                {show.venue_name}
-              </Text>
-              <Text style={{fontSize: 10}}>
-                {show.location}
-              </Text>
+              {show.venue ?
+                <View>
+                  <Text style={{fontSize: 10}}>
+                    {show.date}
+                  </Text>
+                  <Text style={{fontSize: 10}}>
+                    {show.venue.name}
+                  </Text>
+                  <Text style={{fontSize: 10}}>
+                    {show.venue.location}
+                  </Text>
+                </View>
+              :
+                <View>
+                  <Text style={{fontSize: 10}}>
+                    {show.date}
+                  </Text>
+                  <Text style={{fontSize: 10}}>
+                    {show.venue_name}
+                  </Text>
+                  <Text style={{fontSize: 10}}>
+                    {show.location}
+                  </Text>
+                </View>
+              }
             </Body>
           </CardItem>
         </Card>
@@ -182,10 +210,14 @@ export default class Shows extends Component {
           }}>
             <Text>Years</Text>
           </Button>
-          <Button>
+          <Button onPress={() => {
+            this.onShow(venueFilters, 'venues');
+          }}>
             <Text>Venues</Text>
           </Button>
-          <Button>
+          <Button onPress={() => {
+            this.onShow(tourFilters, 'tours');
+          }}>
             <Text>Tours</Text>
           </Button>
           <Button>
