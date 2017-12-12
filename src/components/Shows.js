@@ -61,7 +61,8 @@ export default class Shows extends Component {
         filterOptions: null,
         filterVisible: false,
         loading: false
-      })
+      });
+      Actions.refresh({title: 'All Shows'});
     })
   }
 
@@ -152,7 +153,7 @@ export default class Shows extends Component {
   renderRow = (item) => {
     let show = item.item;
     return (
-      <TouchableOpacity onPress={() => {Actions.show()}} key={show.date} style={styles.item}>
+      <TouchableOpacity onPress={() => {Actions.show({id: show.id, title: show.date})}} key={show.date} style={styles.item}>
         <Card >
           <CardItem cardBody>
             <CachedImage
@@ -187,7 +188,7 @@ export default class Shows extends Component {
           </View>
         </Card>
       </TouchableOpacity>
-    );  
+    );
   }
 
   render() {
@@ -195,9 +196,9 @@ export default class Shows extends Component {
 
     if (!shows || this.state.loading) {
       return (
-        <View style={{ flex: 1 }}>
+        <Container>
           <Spinner visible={this.state.loading} textStyle={{color: '#FFF'}} />
-        </View>
+        </Container>
       );
     }
 
@@ -210,6 +211,9 @@ export default class Shows extends Component {
           options={this.state.filterOptions ? this.state.filterOptions : []}
         />
         <View style={styles.filters}>
+          <Icon name="close" onPress={() => {
+            this.fetchShows();
+          }}/>
           <Button title="Years" onPress={() => {
             this.onShow(yearFilters, 'years');
           }}>
