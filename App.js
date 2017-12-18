@@ -51,9 +51,7 @@ export default class App extends Component {
             </Scene>
           </Drawer>
         </Router>
-        <Footer style={{height: 75}}>
-          <Player/>
-        </Footer>
+        <Player/>
       </Container>
     );
   }

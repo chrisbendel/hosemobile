@@ -14,7 +14,6 @@
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* hosemobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* hosemobileTests.m */; };
 		05EB741E205E413BACCA350E /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9317B1BB56B042A9A1C803F9 /* Octicons.ttf */; };
-		0A3DCF1476C94174BB511BC3 /* libMusicControl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F24F730507E2482881FF34B2 /* libMusicControl.a */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -48,6 +47,7 @@
 		7CEF6C8C9D4C4219AE164ED1 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F45C429ECAFC4C7894A8B3AC /* EvilIcons.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		832929F41FE745E3008B3708 /* dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832929F31FE745E3008B3708 /* dummy.swift */; };
+		83292A571FE84949008B3708 /* libRNTrackPlayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83292A561FE84937008B3708 /* libRNTrackPlayer.a */; };
 		8D9383D2F0CF43939DDB1ADC /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 776E324CB67E4F63AB34482A /* SimpleLineIcons.ttf */; };
 		9A90A2EEB2E84B4FB8AEE9A5 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FB3514CC96C44CD4A101EC25 /* SimpleLineIcons.ttf */; };
 		9BE60F038C5F45B788906004 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A01B501BBA34C7EB3BDDD63 /* MaterialCommunityIcons.ttf */; };
@@ -256,9 +256,9 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
-		832928C31FE726B8008B3708 /* PBXContainerItemProxy */ = {
+		83292A551FE84937008B3708 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 94AAF62CFC6E45F892243824 /* RNTrackPlayer.xcodeproj */;
+			containerPortal = 83292A511FE84937008B3708 /* RNTrackPlayer.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9B0E28291F07D76F00B71D2A;
 			remoteInfo = RNTrackPlayer;
@@ -333,20 +333,6 @@
 			remoteGlobalIDString = 5DBEB1501B18CEA900B34395;
 			remoteInfo = RNVectorIcons;
 		};
-		83D4FEDA1FDDACD500F8EDF5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2520A96C307B45B6AD43127F /* MusicControl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = MusicControl;
-		};
-		83D4FEDC1FDDACD500F8EDF5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2520A96C307B45B6AD43127F /* MusicControl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A3FC285E1EA7A8350097B6A9;
-			remoteInfo = "MusicControl-tvOS";
-		};
 		83D4FF521FDF12E700F8EDF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D9A4B149151C40479E20B380 /* RNFetchBlob.xcodeproj */;
@@ -385,7 +371,6 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = hosemobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = hosemobile/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		2520A96C307B45B6AD43127F /* MusicControl.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = MusicControl.xcodeproj; path = "../node_modules/react-native-music-control/ios/MusicControl.xcodeproj"; sourceTree = "<group>"; };
 		2987660AD23F4DBCABE9F866 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* hosemobile-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hosemobile-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* hosemobile-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "hosemobile-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -401,11 +386,11 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		832929F21FE745E3008B3708 /* hosemobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "hosemobile-Bridging-Header.h"; sourceTree = "<group>"; };
 		832929F31FE745E3008B3708 /* dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dummy.swift; sourceTree = "<group>"; };
+		83292A511FE84937008B3708 /* RNTrackPlayer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNTrackPlayer.xcodeproj; path = "../node_modules/react-native-track-player/ios/RNTrackPlayer.xcodeproj"; sourceTree = "<group>"; };
 		84A8B3E406BF46368584F164 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/native-base/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		8F15CF8F99C54A20A56F488D /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/native-base/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		9317B1BB56B042A9A1C803F9 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		941662363C0B4FAABC197684 /* libRNTrackPlayer.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNTrackPlayer.a; sourceTree = "<group>"; };
-		94AAF62CFC6E45F892243824 /* RNTrackPlayer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNTrackPlayer.xcodeproj; path = "../node_modules/react-native-track-player/ios/RNTrackPlayer.xcodeproj"; sourceTree = "<group>"; };
 		9C83A014AB9442D7A97A5807 /* rubicon-icon-font.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "rubicon-icon-font.ttf"; path = "../node_modules/native-base/Fonts/rubicon-icon-font.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		B6D3518D782E41C089477D7C /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
@@ -437,6 +422,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83292A571FE84949008B3708 /* libRNTrackPlayer.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -451,7 +437,6 @@
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				B3B1C7AA64974A4AA59651C8 /* libRNVectorIcons.a in Frameworks */,
-				0A3DCF1476C94174BB511BC3 /* libMusicControl.a in Frameworks */,
 				65B7328EB76B460B8938C2C7 /* libRNFetchBlob.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -616,6 +601,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				83292A511FE84937008B3708 /* RNTrackPlayer.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -629,9 +615,7 @@
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				0BA63FA59BAB4E33A14EAEB0 /* RNVectorIcons.xcodeproj */,
-				2520A96C307B45B6AD43127F /* MusicControl.xcodeproj */,
 				D9A4B149151C40479E20B380 /* RNFetchBlob.xcodeproj */,
-				94AAF62CFC6E45F892243824 /* RNTrackPlayer.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -645,10 +629,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		832928C01FE726B8008B3708 /* Products */ = {
+		83292A251FE803D7008B3708 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				832928C41FE726B8008B3708 /* libRNTrackPlayer.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		83292A521FE84937008B3708 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				83292A561FE84937008B3708 /* libRNTrackPlayer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -683,6 +674,7 @@
 				B4D39EE95BA24D7F812ED16A /* Resources */,
 				83B1E47B1FDB517900181DDD /* Recovered References */,
 				832929F21FE745E3008B3708 /* hosemobile-Bridging-Header.h */,
+				83292A251FE803D7008B3708 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -696,15 +688,6 @@
 				00E356EE1AD99517003FC87E /* hosemobileTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* hosemobile-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* hosemobile-tvOSTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		83D4FED61FDDACD400F8EDF5 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				83D4FEDB1FDDACD500F8EDF5 /* libMusicControl.a */,
-				83D4FEDD1FDDACD500F8EDF5 /* libMusicControl-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -847,7 +830,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = J7RDJAL6CR;
-						LastSwiftMigration = 0920;
+						LastSwiftMigration = 920;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -872,10 +855,6 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
-				{
-					ProductGroup = 83D4FED61FDDACD400F8EDF5 /* Products */;
-					ProjectRef = 2520A96C307B45B6AD43127F /* MusicControl.xcodeproj */;
-				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
@@ -929,8 +908,8 @@
 					ProjectRef = D9A4B149151C40479E20B380 /* RNFetchBlob.xcodeproj */;
 				},
 				{
-					ProductGroup = 832928C01FE726B8008B3708 /* Products */;
-					ProjectRef = 94AAF62CFC6E45F892243824 /* RNTrackPlayer.xcodeproj */;
+					ProductGroup = 83292A521FE84937008B3708 /* Products */;
+					ProjectRef = 83292A511FE84937008B3708 /* RNTrackPlayer.xcodeproj */;
 				},
 				{
 					ProductGroup = 83B1E4AC1FDB517A00181DDD /* Products */;
@@ -1123,11 +1102,11 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		832928C41FE726B8008B3708 /* libRNTrackPlayer.a */ = {
+		83292A561FE84937008B3708 /* libRNTrackPlayer.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libRNTrackPlayer.a;
-			remoteRef = 832928C31FE726B8008B3708 /* PBXContainerItemProxy */;
+			remoteRef = 83292A551FE84937008B3708 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		8362ACB91FDB2599000186C0 /* libRCTBlob-tvOS.a */ = {
@@ -1198,20 +1177,6 @@
 			fileType = archive.ar;
 			path = libRNVectorIcons.a;
 			remoteRef = 83B1E4AF1FDB517A00181DDD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		83D4FEDB1FDDACD500F8EDF5 /* libMusicControl.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libMusicControl.a;
-			remoteRef = 83D4FEDA1FDDACD500F8EDF5 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		83D4FEDD1FDDACD500F8EDF5 /* libMusicControl-tvOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libMusicControl-tvOS.a";
-			remoteRef = 83D4FEDC1FDDACD500F8EDF5 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		83D4FF531FDF12E700F8EDF5 /* libRNFetchBlob.a */ = {
@@ -1455,7 +1420,7 @@
 					"$(SRCROOT)/../node_modules/react-native-track-player/ios/RNTrackPlayer/**",
 				);
 				INFOPLIST_FILE = hosemobile/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1485,7 +1450,7 @@
 					"$(SRCROOT)/../node_modules/react-native-track-player/ios/RNTrackPlayer/**",
 				);
 				INFOPLIST_FILE = hosemobile/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",

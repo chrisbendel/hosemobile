@@ -3,14 +3,13 @@ package com.hosemobile;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import guichaguri.trackplayer.TrackPlayer;
 import com.RNFetchBlob.RNFetchBlobPackage;
-import com.tanguyantoine.react.MusicControl;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import guichaguri.trackplayer.TrackPlayer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,12 +25,10 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
+          new TrackPlayer(),
           new MainReactPackage(),
-            new TrackPlayer(),
-            new RNFetchBlobPackage(),
-            new MusicControl(),
-            new VectorIconsPackage(),
-          new AudioPackage()
+          new RNFetchBlobPackage(),
+          new VectorIconsPackage()
       );
     }
 

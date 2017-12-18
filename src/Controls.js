@@ -4,19 +4,23 @@ class Controls {
   constructor() {
     this.show = null;
     this.track = null;
-    this.position = null;
     this.playing = false;
 
-    EventEmitter.addListener('play', (show, track) => {
-      
-    });
+    // EventEmitter.addListener('play', (show, track) => {
+    //   this.show = show;
+    //   this.track = track;
+    //   this.playing = true;
+    // });
+
+    // EventEmitter.addListener('pause', () => {
+    //   this.pause();
+    // });
   }
 
   getInfo = () => {
     return {
       show: this.show,
       track: this.track,
-      position: this.position,
       playing: this.playing
     }
   }
@@ -32,11 +36,6 @@ class Controls {
   getTrack = () => {
     return this.track;
   }
-
-  getPosition = () => {
-    return this.position;
-  }
-
   setShow = (s) => {
     this.show = s;
   }
@@ -45,33 +44,20 @@ class Controls {
     this.track = t;
   }
 
-  setPosition = (p) => {
-    this.position = p;
-  }
-
-  setPlaying = (p) => {
-    this.playing = p;
-  }
-
   getPlaying = () => {
     return this.playing;
   }
 
   pause = () => {
     this.playing = false;
-    emitter.emit('pause');
+    EventEmitter.emit('pause');
   }
 
-  play = () => {
+  play = (show, track) => {
     this.playing = true;
-    emitter.emit('play');
-  }
-
-  updateShowAndPosition = (e, s, p = 1) => {
-    if (e) {
-      e.stopPropagation();
-    }
-    emitter.emit('playlistUpdate', s, p - 1);
+    this.show = show;
+    this.track = track;
+    EventEmitter.emit('play', show, track);
   }
 }
 

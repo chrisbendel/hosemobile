@@ -42,16 +42,19 @@ export default class Show extends Component {
   }
 
   renderTracksForSet = (tracks, set) => {
+    let show = this.state.show;
     return tracks.filter(track => {
       return track.set_name === set;
     }).map(track => {
       return (
-        <ListItem icon style={{backgroundColor: 'transparent'}}>
+        <ListItem key={track.id} icon style={{backgroundColor: 'transparent'}}>
           <Left>
-            <Icon active name="play" />
+            <Icon active name="play" onPress={() => {
+              Controls.play(show, track);
+            }}/>
           </Left>
           <Body>
-            <Text>{track.title}  </Text>
+            <Text active note>{track.title}</Text>
           </Body>
           <Right>
             <Text note> {msToSec(track.duration)} </Text>
@@ -70,10 +73,12 @@ export default class Show extends Component {
     const sets = [...new Set(tracks.map(track => track.set_name))];
     return sets.map(set => {
       return (
-        <View>
-          <Separator>
-            <Text>{set}</Text>
-          </Separator>
+        <View key={set}>
+          <ListItem style={{backgroundColor: 'transparent'}}>
+            <Body>
+              <Text>{set}</Text>
+            </Body>
+          </ListItem>
           {this.renderTracksForSet(tracks, set)}
         </View>
       );
