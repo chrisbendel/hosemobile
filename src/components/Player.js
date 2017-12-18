@@ -7,15 +7,17 @@ import {
   TouchableOpacity,
   Button
 } from 'react-native';
-import {
-  Player as Audio,
-  MediaStates
-} from 'react-native-audio-toolkit';
+// import {
+//   Player as Audio,
+//   MediaStates
+// } from 'react-native-audio-toolkit';
+import Controls from './../Controls';
 import MusicControl from 'react-native-music-control';
-import Sound from 'react-native-sound';
+// import Sound from 'react-native-sound';
 import EventEmitter from "react-native-eventemitter";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Dimensions from 'Dimensions';
+import TrackPlayer from 'react-native-track-player';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -27,9 +29,24 @@ export default class Player extends Component {
       play: false,
       loading: true
     }
+
+
+
+    EventEmitter.addListener('play', (show, track) => {
+
+    });
+
+    EventEmitter.addListener('pause', () => {
+      this.pause();
+    });
   }
 
   componentWillMount() {
+    TrackPlayer.setupPlayer().then(() => {
+      console.log(TrackPlayer);
+      // The player is ready to be used
+    });
+
     MusicControl.enableBackgroundMode(true);
     this.player = new Audio();
     // this.whoosh = new Sound('https://phish.in/audio/000/019/097/19097.mp3', '', (error) => {
@@ -55,10 +72,10 @@ export default class Player extends Component {
 
     MusicControl.setNowPlaying({
       title: 'Billie Jean',
-      artwork: 'https://i.imgur.com/e1cpwdo.png',
-      artist: 'Michael Jackson',
+      artwork: 'https://s3.amazonaws.com/hose/images/' + show.date + '.jpg',
+      artist: 'Phish',
       album: 'Thriller',
-      genre: 'Post-disco, Rhythm and Blues, Funk, Dance-pop',
+      genre: 'Phish',
       duration: this.whoosh.getDuration(),
       description: 'Billie Jean is a song by American singer Michael Jackson. It is the second single from the singer\'s sixth solo album, Thriller (1982). It was written and composed by Jackson and produced by Jackson and Quincy Jones.',
       date: '1983-01-02T00:00:00Z',
@@ -74,12 +91,13 @@ export default class Player extends Component {
   }
 
   playSomething = () => {
+    let show = this.state.show;
     MusicControl.setNowPlaying({
       title: 'Rock With You',
-      artwork: 'https://upload.wikimedia.org/wikipedia/en/f/f6/Off_the_wall.jpg',
-      artist: 'Michael Jackson',
+      artwork: 'https://s3.amazonaws.com/hose/images/' + show.date + '.jpg',
+      artist: 'Phish',
       album: 'Off The Wall',
-      genre: 'Post-disco, Rhythm and Blues, Funk, Dance-pop',
+      genre: 'Phish',
       duration: this.whoosh.getDuration(),
       description: 'Billie Jean is a song by American singer Michael Jackson. It is the second single from the singer\'s sixth solo album, Thriller (1982). It was written and composed by Jackson and produced by Jackson and Quincy Jones.',
       date: '1983-01-02T00:00:00Z',
@@ -92,22 +110,6 @@ export default class Player extends Component {
     this.setState({
       play: true
     })
-  }
-
-  changeCover = () => {
-    MusicControl.setNowPlaying({
-      title: 'Smooth Criminal',
-      artwork: 'https://upload.wikimedia.org/wikipedia/en/5/51/Michael_Jackson_-_Bad.png',
-      artist: 'Jackson, Michael',
-      album: 'Bad',
-      genre: 'Post-disco, Rhythm and Blues, Funk, Dance-pop',
-      duration: this.whoosh.getDuration(),
-      description: 'Billie Jean is a song by American singer Michael Jackson. It is the second single from the singer\'s sixth solo album, Thriller (1982). It was written and composed by Jackson and produced by Jackson and Quincy Jones.',
-      date: '1983-01-02T00:00:00Z',
-      rating: 84
-    })
-    MusicControl.enableControl('play', false)
-    MusicControl.enableControl('pause', true)
   }
 
   pause = () => {
