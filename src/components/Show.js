@@ -24,18 +24,25 @@ export default class Show extends Component {
 
   componentWillMount() {
     let id = this.props.id;
+    this.setState({loading: true})
     switch (id) {
       case 'random':
         randomShow().then(show => {
           Actions.refresh({title: show.date});
-          this.setState({show: show});
+          this.setState({
+            show: show,
+            loading: false
+          });
         });
         
         break;
       default: 
         show(id).then(show => {
           Actions.refresh({title: show.date});
-          this.setState({show: show});
+          this.setState({
+            show: show,
+            loading: false
+          });
         })
         break;
     }

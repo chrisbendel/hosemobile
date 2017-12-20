@@ -42,12 +42,10 @@ export default class App extends Component {
       <Container>
         <Router>
           <Drawer drawerIcon={<Icon style={{margin: -10, marginRight: 5, fontSize: 40}} name="ios-menu"/>} drawerPosition="right" key="drawer" contentComponent={Nav}>
-            <Scene key="showStuff">
-              <Scene key="shows" component={Shows} title="All Shows" type="reset"/>
+            <Scene key="root">
+              <Scene key="shows" component={Shows} title="All Shows"/>
               <Scene key="show" component={Show} title="Show"/>
-            </Scene>
-            <Scene key="songStuff">
-              <Scene key="songs" component={Songs} title="Songs" type="reset"/>
+              <Scene key="songs" component={Songs} title="Songs"/>
             </Scene>
           </Drawer>
         </Router>

@@ -13,7 +13,8 @@ import EventEmitter from "react-native-eventemitter";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Dimensions from 'Dimensions';
 import TrackPlayer from 'react-native-track-player';
-console.log(TrackPlayer);
+import { Actions } from 'react-native-router-flux';
+
 let mapTracksForPlayer = (show) => {
   let tracks = show.tracks;
   return tracks.map(track => ({
@@ -58,33 +59,26 @@ export default class Player extends Component {
       this.setShowAndTrack(show, track);
     });
 
-    EventEmitter.addListener('remotePause', () => {
-      alert('pause');
-      TrackPlayer.pause();
-    });
-
-    EventEmitter.addListener('remotePlay', () => {
-      alert('play');
-      TrackPlayer.play();
-    });
-
-    EventEmitter.addListener('pause', () => {
-      // this.pause();
-    });
+    // EventEmitter.addListener('pause', () => {
+    //   // this.pause();
+    // });
   }
 
-  setShowAndTrack = (show, track) => {
+  setShowAndTrack = async (show, track) => {
     let currentShow = this.state.currentShow;
     let currentTrack = this.state.currentTrack;
     let tracksForPlayer = mapTracksForPlayer(show);
 
-    TrackPlayer.setupPlayer().then(async () => {
-      console.log(TrackPlayer);
-      TrackPlayer.CAPABILITY_PLAY = 0;
-      TrackPlayer.CAPABILITY_PAUSE = 1;
-      TrackPlayer.CAPABILITY_SKIP_TO_NEXT = 3;
-      TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS = 4;
+    TrackPlayer.setupPlayer({
+      maxCacheFiles: 20
+    }).then(async () => {
       TrackPlayer.updateOptions({
+        compactCapabilities: [
+          TrackPlayer.CAPABILITY_PLAY,
+          TrackPlayer.CAPABILITY_PAUSE,
+          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+        ],
         capabilities: [
           TrackPlayer.CAPABILITY_PLAY,
           TrackPlayer.CAPABILITY_PAUSE,
@@ -94,10 +88,9 @@ export default class Player extends Component {
       })
       await TrackPlayer.add(tracksForPlayer);
 
-      console.log(TrackPlayer);
       TrackPlayer.skip(track.id.toString());
       TrackPlayer.play();
-  
+      console.log(TrackPlayer);
     });
 
 
@@ -106,26 +99,6 @@ export default class Player extends Component {
       currentTrack: track,
       tracks: tracksForPlayer
     });
-    
-    // console.log(tracksForPlayer);
-
-    // console.log(tracksForPlayer);
-    // TrackPlayer.add(tracksForPlayer).then(function() {
-    //   console.log(e, tracksForPlayer);
-    //   // TrackPlayer.skip(track.id);
-    //   TrackPlayer.play();
-    // });
-    // } else {
-    //   if (currentShow.id === show.id) {
-    //     if (currentTrack.id === track.id) {
-    //       return;
-    //     } else {
-          
-    //     }
-    //   }
-    // }
-
-    
   }
 
   componentWillMount() {
@@ -133,7 +106,8 @@ export default class Player extends Component {
   }
 
   render() {
-    if (!this.state.currentShow) {
+    let show = this.state.currentShow;
+    if (!show) {
       return null;
     }
 
@@ -152,6 +126,7 @@ export default class Player extends Component {
           size={50} 
           color="#4F8EF7" 
           onPress={() => {
+            console.log(TrackPlayer);
             // this.play()
           }}
         />

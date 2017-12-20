@@ -43,23 +43,44 @@ export default class Shows extends Component {
       fetchingMoreShows: false,
       filterVisible: false,
       filterOptions: null,
-      filterType: null
+      filterType: null,
+      loadMoreShows: false
     }
   }
   
   componentWillMount() {
-    this.fetchShows();
+    this.setState({loading: true});
+    if (this.props.id === 'today') {
+      this.fetchShowsToday();
+    } else {
+      this.fetchShows();
+    }
+  }
+
+  fetchShowsToday = () => {
+    let today = new Date();
+    let day = today.getDate().toString();
+    let month = (today.getMonth() + 1).toString();
+    date = month + "-" + day;
+    showsToday(date).then(shows => {
+      this.setState({
+        shows: shows,
+        loading: false,
+        loadMoreShows: false
+      });
+      Actions.refresh({title: 'Shows on ' + date})
+    });
   }
 
   fetchShows = (page = 1) => {
-    this.setState({loading: true});
     shows(page).then(shows => {
       this.setState({
         shows: shows,
         page: page,
         filterOptions: null,
         filterVisible: false,
-        loading: false
+        loading: false,
+        loadMoreShows: true
       });
       Actions.refresh({title: 'All Shows'});
     })
@@ -98,7 +119,8 @@ export default class Shows extends Component {
             this.setState({
               shows: shows.reverse(),
               filterVisible: false,
-              loading: false
+              loading: false,
+              loadMoreShows: false
             });
           });
         }
@@ -116,7 +138,8 @@ export default class Shows extends Component {
             this.setState({
               shows: data.reverse(),
               filterVisible: false,
-              loading: false
+              loading: false,
+              loadMoreShows: false
             })
           })
         });
@@ -126,7 +149,8 @@ export default class Shows extends Component {
           this.setState({
             shows: shows.reverse(),
             filterVisible: false,
-            loading: false
+            loading: false,
+            loadMoreShows: false
           });
         });
         break;
@@ -143,7 +167,7 @@ export default class Shows extends Component {
   onScroll = (e) => {
     let el = e.nativeEvent;
     if (el.contentSize.height - 100 <= el.contentOffset.y + el.layoutMeasurement.height) {
-      if (!this.state.fetchingMoreShows && !this.state.filterOptions) {
+      if (!this.state.fetchingMoreShows && this.state.loadMoreShows) {
         this.loadMoreShows();
       }
     }
@@ -210,9 +234,11 @@ export default class Shows extends Component {
           options={this.state.filterOptions ? this.state.filterOptions : []}
         />
         <View style={styles.filters}>
-          <Icon name="close" onPress={() => {
+          <Button title="All Shows" onPress={() => {
             this.fetchShows();
-          }}/>
+          }}>
+            <Text>All Shows</Text>
+          </Button>
           <Button title="Years" onPress={() => {
             this.onShow(yearFilters, 'years');
           }}>

@@ -3602,10 +3602,6 @@ react-native-modal-filter-picker@^1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/react-native-modal-filter-picker/-/react-native-modal-filter-picker-1.3.2.tgz#1a678c68132d65c82e631aee718ed979255969aa"
 
-react-native-music-control@^0.4.13:
-  version "0.4.13"
-  resolved "https://registry.yarnpkg.com/react-native-music-control/-/react-native-music-control-0.4.13.tgz#717a0f77ccda9b324d06e421b145ef21c189bdc0"
-
 react-native-router-flux@^4.0.0-beta.24:
   version "4.0.0-beta.24"
   resolved "https://registry.yarnpkg.com/react-native-router-flux/-/react-native-router-flux-4.0.0-beta.24.tgz#93fb1976688bd6e34f73b2ae6764704efb7bcdd5"
@@ -3636,7 +3632,7 @@ react-native-vector-icons@^4.4.2, react-native-vector-icons@~4.4.2:
     prop-types "^15.5.10"
     yargs "^8.0.2"
 
-react-native@0.51.0:
+react-native@^0.51.0:
   version "0.51.0"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.51.0.tgz#fe25934b3030fd323f3ca1a70f034133465955ed"
   dependencies:
@@ -3738,9 +3734,9 @@ react-tween-state@^0.1.5:
     raf "^3.1.0"
     tween-functions "^1.0.1"
 
-react@16.0.0:
-  version "16.0.0"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.0.0.tgz#ce7df8f1941b036f02b2cca9dbd0cb1f0e855e2d"
+react@^16.0.0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.2.0.tgz#a31bd2dab89bff65d42134fa187f24d054c273ba"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
