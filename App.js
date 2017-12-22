@@ -39,10 +39,15 @@ export default class App extends Component {
 
   render() {
     return (
-      <Container>
+      <Container style={{backgroundColor: '#DCDDD8'}}>
         <Router>
-          <Drawer drawerIcon={<Icon style={{margin: -10, marginRight: 5, fontSize: 40}} name="ios-menu"/>} drawerPosition="right" key="drawer" contentComponent={Nav}>
-            <Scene key="root">
+          <Drawer
+            drawerIcon={<Icon style={{margin: -10, marginRight: 5, fontSize: 40}} name="ios-menu"/>} 
+            drawerPosition="right"
+            key="drawer"
+            contentComponent={Nav}
+          >
+            <Scene navigationBarStyle={{backgroundColor: '#DCDDD8'}} key="root">
               <Scene key="shows" component={Shows} title="All Shows"/>
               <Scene key="show" component={Show} title="Show"/>
               <Scene key="songs" component={Songs} title="Songs"/>

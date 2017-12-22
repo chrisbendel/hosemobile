@@ -6,15 +6,11 @@ class Controls {
     this.track = null;
     this.playing = false;
 
-    // EventEmitter.addListener('play', (show, track) => {
-    //   this.show = show;
-    //   this.track = track;
-    //   this.playing = true;
-    // });
-
-    // EventEmitter.addListener('pause', () => {
-    //   this.pause();
-    // });
+    EventEmitter.addListener('play', (show, track) => {
+      this.show = show;
+      this.track = track;
+      this.playing = true;
+    });
   }
 
   getInfo = () => {

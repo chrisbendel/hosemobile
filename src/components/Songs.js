@@ -7,10 +7,11 @@ import {
 } from 'react-native';
 import {Container, Header, Item, Icon, Input, Button, Text, List, ListItem, Left, Body, Right, Content} from 'native-base';
 import {songFilters, trackJamcharts} from './../Filters';
-import {tracksForSong} from './../api/phishin';
+import {tracksForSong, show} from './../api/phishin';
 import AutoComplete from 'react-native-autocomplete';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Actions } from 'react-native-router-flux';
+import Controls from './../Controls';
 
 const msToSec = (time) => {
   var minutes = Math.floor(time / 60000);
@@ -29,7 +30,11 @@ export default class Songs extends Component {
     this.state = {
       data: [],
       songs: null,
-      loading: false
+      loading: false,
+      likesOrder: false,
+      timeOrder: false,
+      dateOrder: false,
+      jamcharts: false
     }
   }
 
@@ -38,16 +43,20 @@ export default class Songs extends Component {
     tracksForSong(song).then(songs => {
       this.setState({
         songs: songs,
-        loading: false
-      })
+        loading: false,
+        trackId: song
+      });
     });
   }
 
   sortSongs = (attr) => {
-    let tracks = this.state.songs;
+    let songs = this.state.songs;
+    if (!songs) {
+      return;
+    }
 
     if (attr === 'date') {
-      let sorted = tracks.sort((a, b) => {
+      let sorted = songs.sort((a, b) => {
         var c = new Date(a.show_date);
         var d = new Date(b.show_date);
         if (this.state.dateOrder) {
@@ -58,35 +67,36 @@ export default class Songs extends Component {
       });
 
       this.setState({
-        tracks: sorted,
+        songs: sorted,
         dateOrder: !this.state.dateOrder
       })
     }
 
     if (attr === 'duration') {
-      let sorted = tracks.sort((a, b) => {
+      let sorted = songs.sort((a, b) => {
         if (this.state.timeOrder) {
           return parseFloat(a.duration) - parseFloat(b.duration);
         } else {
           return parseFloat(b.duration) - parseFloat(a.duration);
         }
       });
+
       this.setState({
-        tracks: sorted,
+        songs: sorted,
         timeOrder: !this.state.timeOrder
-      })
+      });
     }
     
     if (attr === 'jamcharts') {
       if (!this.state.jamcharts) {
-        let sorted = tracks.filter(track => {
-          return isJamchart(track.id);        
-        })
+        let sorted = songs.filter(track => {
+          return isJamchart(track.id);
+        });
 
         this.setState({
-          tracks: sorted,
+          songs: sorted,
           jamcharts: !this.state.jamcharts
-        })
+        });
       } else {
         this.setState({jamcharts: !this.state.jamcharts})
         this.fetchTracks(this.state.trackId);
@@ -94,7 +104,7 @@ export default class Songs extends Component {
     }
 
     if (attr === 'likes_count') {
-      let sorted = tracks.sort((a, b) => {
+      let sorted = songs.sort((a, b) => {
         if (this.state.likesOrder) {
           return parseFloat(a.likes_count) - parseFloat(b.likes_count);
         } else {
@@ -102,7 +112,7 @@ export default class Songs extends Component {
         }
       });
       this.setState({
-        tracks: sorted,
+        songs: sorted,
         likesOrder: !this.state.likesOrder
       })
     }
@@ -125,31 +135,31 @@ export default class Songs extends Component {
   }
 
   renderTracks = (tracks) => {
-    console.log(tracks[0]);
     return tracks.map(track => {
-      
       return (
-        <ListItem key={track.id} icon style={{backgroundColor: 'transparent'}}>
-          <Left>
-            <Icon active name="play" onPress={() => {
-              // Controls.play(show, track);
+        <ListItem key={track.id} icon style={styles.listItem}>
+          <Left style={{paddingLeft: 5, paddingRight: 5}}>
+            <Icon fontSize={40} active name="play" onPress={() => {
+              show(track.show_id).then(show => {
+                Controls.play(show, track);
+              });
             }}/>
           </Left>
           <Body>
             <TouchableOpacity onPress={() => {
-              // Actions.showStuff();
               Actions.show({id: track.show_id});
             }}>
-              <Text active>{track.show_date}</Text>
+              <Text active note>{track.show_date}</Text>
             </TouchableOpacity>
           </Body>
-          <Right>
+          <Right style={styles.listItemContent}>
+            <Text note>{isJamchart(track.id) ? "Jamcharts" : ""}</Text>
+          </Right>
+          <Right style={styles.listItemContent}>
             <Text note> {msToSec(track.duration)} </Text>
           </Right>
-          <Right>
-            {/* <Icon active name="heart"> */}
-              <Text> {track.likes_count} </Text>
-            {/* </Icon>  */}
+          <Right style={styles.listItemContent}>
+            <Text note> {track.likes_count} </Text>
           </Right>
         </ListItem>
       );
@@ -168,42 +178,57 @@ export default class Songs extends Component {
           onSelect={this.onSelect}
           placeholder="Search for a song"
           clearButtonMode="always"
+          autoFocus={true}
           returnKeyType="go"
           textAlign="center"
           clearTextOnFocus
-          autoCompleteTableTopOffset={10}
-          autoCompleteTableLeftOffset={20}
-          autoCompleteTableSizeOffset={-40}
+          autoCompleteTableTopOffset={0}
+          autoCompleteTableLeftOffset={0}
+          autoCompleteTableSizeOffset={0}
           autoCompleteTableBorderColor="lightblue"
           autoCompleteTableBackgroundColor="azure"
           autoCompleteTableCornerRadius={8}
           autoCompleteTableBorderWidth={1}
-          autoCompleteFontSize={15}
+          autoCompleteFontSize={25}
           autoCompleteRegularFontName="Helvetica Neue"
           autoCompleteBoldFontName="Helvetica Bold"
           autoCompleteTableCellTextColor={"dimgray"}
-          autoCompleteRowHeight={40}
+          autoCompleteRowHeight={60}
           autoCompleteFetchRequestDelay={100}
           maximumNumberOfAutoCompleteRows={10}
         />
-        <ListItem key="filters" icon style={{backgroundColor: 'transparent'}}>
+        <ListItem key="filters" icon style={styles.listItem}>
           <Left>
-
+            <Icon/>
           </Left>
           <Body>
             <TouchableOpacity onPress={() => {
               this.sortSongs('date');
             }}>
-              <Text active note>Date</Text>
+              <Text active>Date</Text>
             </TouchableOpacity>
           </Body>
-          <Right>
-          <Icon name="clock" onPress={() => {
-              this.sortSongs('duration');
-            }}/>
+          
+          <Right style={styles.listItemContent}>
+            <TouchableOpacity onPress={() => {
+              this.sortSongs('jamcharts');
+            }}>
+              <Text active>Jamcharts</Text>
+            </TouchableOpacity>
           </Right>
-          <Right>
-            <Icon active name="heart"/>
+          <Right style={styles.listItemContent}>
+            <TouchableOpacity onPress={() => {
+                  this.sortSongs('duration');
+                }}>
+              <Icon fontSize={100} name="clock"/>
+            </TouchableOpacity>
+          </Right>
+          <Right style={styles.listItemContent}>
+            <TouchableOpacity onPress={() => {
+                this.sortSongs('likes_count');
+              }}>
+              <Icon fontSize={100} active name="heart" />
+            </TouchableOpacity>
           </Right>
         </ListItem>
         {this.state.loading ? 
@@ -214,7 +239,6 @@ export default class Songs extends Component {
           <Content>
           {songs && 
             <List>
-
               {this.renderTracks(songs)}
             </List>
           }
@@ -232,7 +256,14 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: "#FFF",
     borderColor: "lightblue",
+    textAlign: 'center',
     borderWidth: 1
+  },
+  listItem: {
+    backgroundColor: 'transparent'
+  },
+  listItemContent: {
+    marginLeft: 5
   },
   container: {
     flex: 1,

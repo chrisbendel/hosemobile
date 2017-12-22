@@ -38,7 +38,7 @@ export const testFunc = async() => {
 }
 
 export const shows = async(page = 1) => {
-  let data = await (await cachedFetch(base + 'shows?sort_attr=date&sort_dir=desc&per_page=10&page=' + page)).json();
+  let data = await (await cachedFetch(base + 'shows?sort_attr=date&sort_dir=desc&per_page=30&page=' + page)).json();
   return data.data;
 }
 

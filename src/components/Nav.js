@@ -21,54 +21,63 @@ import {
 export default class Sidebar extends Component {
   render() {
     return (
-      <Content style={{paddingTop: 100, backgroundColor: '#FFFFFF'}}>
+      <Content style={{paddingTop: 100, backgroundColor: '#DCDDD8'}}>
         <List>
-          <ListItem icon onPress={() => {
+          <ListItem style={styles.background} icon onPress={() => {
               // Actions.showStuff();
               Actions.shows({id: 'today'});
             }}>
             <Left>
-              <Icon name="calendar" />
+              <Icon style={styles.text} name="calendar" />
             </Left>
             <Body >
-              <Text>On This Day</Text>
+              <Text style={styles.text}>On This Day</Text>
             </Body>
           </ListItem>
-          <ListItem icon onPress={() => {
-              // Actions.showStuff();
+          <ListItem style={styles.background} icon onPress={() => {
               Actions.show({id: 'random'})
             }}>
             <Left>
-              <Icon name="person" />
+              <Icon style={styles.text} name="person" />
             </Left>
             <Body>
-              <Text>Random Show</Text>
+              <Text style={styles.text}>Random Show</Text>
             </Body>
           </ListItem>
-          <ListItem icon onPress={() => {
-              // Actions.showStuff();
+          <ListItem style={styles.background} icon onPress={() => {
               Actions.shows({type: 'reset'});
             }}>
             <Left>
-              <Icon name="ios-albums" />
+              <Icon style={styles.text} name="ios-albums" />
             </Left>
             <Body>
-              <Text>Shows</Text>
+              <Text style={styles.text}>Shows</Text>
             </Body>
           </ListItem>
-          <ListItem icon onPress={() => {
+          <ListItem style={styles.background} icon onPress={() => {
               // Actions.songStuff();
               Actions.songs({type: 'reset'})
             }}>
             <Left>
-              <Icon name="ios-musical-notes" />
+              <Icon style={styles.text} name="ios-musical-notes" />
             </Left>
             <Body>
-              <Text>Songs</Text>
+              <Text style={styles.text}>Songs</Text>
             </Body>
           </ListItem>
         </List>
       </Content>
     );
+  }
+}
+
+const styles = {
+  background: {
+    backgroundColor: '#DCDDD8',
+    marginTop: 20
+  },
+  text: {
+    color: '#61A2DA',
+    fontSize: 25
   }
 }

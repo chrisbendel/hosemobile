@@ -185,27 +185,26 @@ export default class Shows extends Component {
             />
           </CardItem>
           <View style={styles.showText}>
-            <Text style={{fontSize: 12}}>
+            <Text style={{fontSize: 16}}>
               {show.date}
             </Text>
             {show.venue ?
             <View>
-            <Text note style={{fontSize: 12}}>
-              {show.venue.name}
-              {show.venue.location}
-            </Text>
-            <Text style={{fontSize: 10}}>
-              {show.venue.location}
-            </Text>
+              <Text numberOfLines={1} style={{fontSize: 12}}>
+                {show.venue.name}
+              </Text>
+              <Text numberOfLines={1} note style={{fontSize: 10}}>
+                {show.venue.location}
+              </Text>
             </View>
             :
             <View>
-            <Text numberOfLines={1} style={{fontSize: 10}}>
-              {show.venue_name}
-            </Text>
-            <Text numberOfLines={1} style={{fontSize: 10}}>
-              {show.location}
-            </Text>
+              <Text numberOfLines={1} style={{fontSize: 12}}>
+                {show.venue_name}
+              </Text>
+              <Text note numberOfLines={1} style={{fontSize: 10}}>
+                {show.location}
+              </Text>
             </View>
           }
           </View>
@@ -216,7 +215,7 @@ export default class Shows extends Component {
 
   render() {
     let shows = this.state.shows;
-
+    
     if (!shows || this.state.loading) {
       return (
         <Container>
@@ -226,7 +225,7 @@ export default class Shows extends Component {
     }
 
     return (
-      <Container style={{padding: 0}}>
+      <Container style={{backgroundColor: '#DCDDD8'}}>
         <ModalFilterPicker
           visible={this.state.filterVisible}
           onSelect={(picked) => {this.onSelect(picked)}}
@@ -234,22 +233,22 @@ export default class Shows extends Component {
           options={this.state.filterOptions ? this.state.filterOptions : []}
         />
         <View style={styles.filters}>
-          <Button title="All Shows" onPress={() => {
+          <Button style={styles.filterButton} title="All Shows" onPress={() => {
             this.fetchShows();
           }}>
             <Text>All Shows</Text>
           </Button>
-          <Button title="Years" onPress={() => {
+          <Button style={styles.filterButton} title="Years" onPress={() => {
             this.onShow(yearFilters, 'years');
           }}>
             <Text>Years</Text>
           </Button>
-          <Button onPress={() => {
+          <Button style={styles.filterButton} onPress={() => {
             this.onShow(venueFilters, 'venues');
           }}>
             <Text>Venues</Text>
           </Button>
-          <Button onPress={() => {
+          <Button style={styles.filterButton} onPress={() => {
             this.onShow(tourFilters, 'tours');
           }}>
             <Text>Tours</Text>
@@ -288,6 +287,9 @@ var styles = StyleSheet.create({
     flex: 1,
     height: 100,
     resizeMode: 'cover'
+  },
+  filterButton: {
+    backgroundColor: '#61A2DA'
   },
   filters: {
     flexDirection: 'row',
