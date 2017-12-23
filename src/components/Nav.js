@@ -1,34 +1,30 @@
 import React, { Component } from 'react';
 import {
   View,
-  Image
+  Image,
+  Linking,
 } from 'react-native';
 
 import {Actions} from 'react-native-router-flux';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import {
-  Content,
-  List,
-  ListItem,
-  Text,
-  Icon,
-  Left,
-  Body,
-  Right,
-  Thumbnail
-} from 'native-base';
+import { Content, List, ListItem, Text, Left, Body, Right} from 'native-base';
+import { CachedImage } from 'react-native-img-cache';
 
 export default class Sidebar extends Component {
   render() {
     return (
-      <Content style={{paddingTop: 100, backgroundColor: '#DCDDD8'}}>
+      <Content contentContainerStyle={styles.container}>
+        <Image
+          source={{uri: 'https://s3.amazonaws.com/hose/images/hose.png'}}
+          style={styles.image}
+        />
         <List>
           <ListItem style={styles.background} icon onPress={() => {
-              // Actions.showStuff();
               Actions.shows({id: 'today'});
             }}>
             <Left>
-              <Icon style={styles.text} name="calendar" />
+              <Icon color="#D77186" size={35} name="ios-calendar" />
             </Left>
             <Body >
               <Text style={styles.text}>On This Day</Text>
@@ -38,31 +34,40 @@ export default class Sidebar extends Component {
               Actions.show({id: 'random'})
             }}>
             <Left>
-              <Icon style={styles.text} name="person" />
+              <Icon color="#D77186" size={35} name="ios-shuffle" />
             </Left>
             <Body>
               <Text style={styles.text}>Random Show</Text>
             </Body>
           </ListItem>
           <ListItem style={styles.background} icon onPress={() => {
+              Actions.songs({type: 'reset'})
+            }}>
+            <Left>
+              <Icon color="#D77186" size={40} name="ios-musical-notes" />
+            </Left>
+            <Body>
+              <Text style={styles.text}>Songs</Text>
+            </Body>
+          </ListItem>
+          <ListItem style={styles.background} icon onPress={() => {
               Actions.shows({type: 'reset'});
             }}>
             <Left>
-              <Icon style={styles.text} name="ios-albums" />
+              <Icon color="#D77186" size={35} name="ios-albums" />
             </Left>
             <Body>
               <Text style={styles.text}>Shows</Text>
             </Body>
           </ListItem>
           <ListItem style={styles.background} icon onPress={() => {
-              // Actions.songStuff();
-              Actions.songs({type: 'reset'})
+              Linking.openURL('https://www.paypal.me/chrissbendel');
             }}>
             <Left>
-              <Icon style={styles.text} name="ios-musical-notes" />
+              <Icon color="#D77186" size={35} name="ios-cash" />
             </Left>
             <Body>
-              <Text style={styles.text}>Songs</Text>
+              <Text style={styles.text}>Donations</Text>
             </Body>
           </ListItem>
         </List>
@@ -72,12 +77,26 @@ export default class Sidebar extends Component {
 }
 
 const styles = {
+  container: {
+    paddingTop: 50,
+    display: 'flex',
+    backgroundColor: "#FFF",
+    justifyContent: 'center'
+  },
   background: {
-    backgroundColor: '#DCDDD8',
-    marginTop: 20
+    backgroundColor: '#FFF',
+    marginTop: 20,
+    borderColor: "#D77186"
   },
   text: {
-    color: '#61A2DA',
+    color: '#4080B0',
     fontSize: 25
+  },
+  image: {
+    display: 'flex',
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    height: 75,
+    width: 75,
   }
 }

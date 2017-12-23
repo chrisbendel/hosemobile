@@ -1,10 +1,11 @@
-import EventEmitter from "react-native-eventemitter";
+import EventEmitter from 'react-native-eventemitter';
 import TrackPlayer from 'react-native-track-player';
+// import PlayerController from './PlayerController';
 
 export default PlayerHandler = async (data) => {
-  console.log(data);
-  //handle playback-track-changed here
-  if (data.type == 'remote-play') {
+  if (data.type == 'playback-track-changed') {
+    EventEmitter.emit('playlistUpdate', data);
+  } else if (data.type == 'remote-play') {
     TrackPlayer.play();
   } else if (data.type == 'remote-pause') {
     TrackPlayer.pause();

@@ -25,6 +25,7 @@ import { Actions } from 'react-native-router-flux';
 import {yearFilters, tourFilters, venueFilters, sortByOptions, showJamcharts} from './../Filters';
 import {CachedImage} from "react-native-img-cache";
 import Spinner from 'react-native-loading-spinner-overlay';
+import PlayerController from './../PlayerController';
 
 const width = Dimensions.get('window').width;
 
@@ -82,7 +83,7 @@ export default class Shows extends Component {
         loading: false,
         loadMoreShows: true
       });
-      Actions.refresh({title: 'All Shows'});
+      Actions.refresh({title: 'Shows'});
     })
   }
 
@@ -185,7 +186,7 @@ export default class Shows extends Component {
             />
           </CardItem>
           <View style={styles.showText}>
-            <Text style={{fontSize: 16}}>
+            <Text style={{fontSize: 16, fontWeight: 'bold', color: "#4080B0"}}>
               {show.date}
             </Text>
             {show.venue ?
@@ -193,7 +194,7 @@ export default class Shows extends Component {
               <Text numberOfLines={1} style={{fontSize: 12}}>
                 {show.venue.name}
               </Text>
-              <Text numberOfLines={1} note style={{fontSize: 10}}>
+              <Text numberOfLines={1} style={{fontSize: 10}}>
                 {show.venue.location}
               </Text>
             </View>
@@ -202,7 +203,7 @@ export default class Shows extends Component {
               <Text numberOfLines={1} style={{fontSize: 12}}>
                 {show.venue_name}
               </Text>
-              <Text note numberOfLines={1} style={{fontSize: 10}}>
+              <Text numberOfLines={1} style={{fontSize: 10}}>
                 {show.location}
               </Text>
             </View>
@@ -216,7 +217,7 @@ export default class Shows extends Component {
   render() {
     let shows = this.state.shows;
     
-    if (!shows || this.state.loading) {
+    if (this.state.loading) {
       return (
         <Container>
           <Spinner visible={this.state.loading} textStyle={{color: '#FFF'}} />
@@ -225,18 +226,19 @@ export default class Shows extends Component {
     }
 
     return (
-      <Container style={{backgroundColor: '#DCDDD8'}}>
+      <Container style={{backgroundColor: '#FFF'}}>
         <ModalFilterPicker
           visible={this.state.filterVisible}
           onSelect={(picked) => {this.onSelect(picked)}}
           onCancel={this.onCancel}
           options={this.state.filterOptions ? this.state.filterOptions : []}
         />
+        
         <View style={styles.filters}>
-          <Button style={styles.filterButton} title="All Shows" onPress={() => {
+          <Button style={styles.filterButton} title="Shows" onPress={() => {
             this.fetchShows();
           }}>
-            <Text>All Shows</Text>
+            <Text>Shows</Text>
           </Button>
           <Button style={styles.filterButton} title="Years" onPress={() => {
             this.onShow(yearFilters, 'years');
@@ -255,6 +257,7 @@ export default class Shows extends Component {
           </Button>
         </View>
 
+        {shows.length ?
         <FlatList
           contentContainerStyle={styles.list}
           onScroll={this.onScroll}
@@ -263,6 +266,12 @@ export default class Shows extends Component {
           renderItem={this.renderRow}
           keyExtractor={(item, index) => index}
         />
+        :
+        <View style={{alignSelf: 'center', justifyContent: 'center'}}>
+          <Text> No Shows Found </Text>
+        </View>
+        }
+
       </Container>
     );
   }
@@ -289,7 +298,7 @@ var styles = StyleSheet.create({
     resizeMode: 'cover'
   },
   filterButton: {
-    backgroundColor: '#61A2DA'
+    backgroundColor: '#4080B0'
   },
   filters: {
     flexDirection: 'row',

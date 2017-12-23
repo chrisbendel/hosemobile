@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  View,
-  TouchableOpacity
-} from 'react-native';
-import {Container, Header, Item, Icon, Input, Button, Text, List, ListItem, Left, Body, Right, Content} from 'native-base';
+import { View, TouchableOpacity, Platform } from 'react-native';
+import {Container, Header, Item, Input, Button, Text, List, ListItem, Left, Body, Right, Content} from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {songFilters, trackJamcharts} from './../Filters';
 import {tracksForSong, show} from './../api/phishin';
 import AutoComplete from 'react-native-autocomplete';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Actions } from 'react-native-router-flux';
-import Controls from './../Controls';
+import PlayerController from './../PlayerController';
+import EventEmitter from 'react-native-eventemitter';
+import ModalFilterPicker from 'react-native-modal-filter-picker';
 
 const msToSec = (time) => {
   var minutes = Math.floor(time / 60000);
@@ -30,13 +28,38 @@ export default class Songs extends Component {
     this.state = {
       data: [],
       songs: null,
+      track: null,
+      playing: false,
       loading: false,
       likesOrder: false,
       timeOrder: false,
       dateOrder: false,
-      jamcharts: false
+      jamcharts: false,
+      filterVisible: false
     }
+
+    EventEmitter.addListener('current', (show, track, playing) => {
+      if (this.mounted) {
+        this.setState({
+          show: show,
+          track: track,
+          playing: playing
+        });
+      }
+    });
   }
+
+  componentWillMount() { 
+    this.mounted = true;
+    let playing = PlayerController.getPlaying();
+    let playingTrack = PlayerController.getTrack();
+    this.setState({
+      playing: playing,
+      track: playingTrack
+    });
+  }
+
+  componentWillUnmount() { this.mounted = false }
 
   fetchTracks = (song) => {
     this.setState({loading: true});
@@ -125,6 +148,16 @@ export default class Songs extends Component {
 
     this.setState({ data: songs });
   }
+  
+  onFilterSelect = (picked) => {
+    songObj = songFilters.find(song => {
+      console.log(picked, song);
+      return picked === song.key;
+    });
+    Actions.refresh({title: songObj.label});
+    this.setState({filterVisible: false});
+    this.fetchTracks(songObj.key);
+  }
 
   onSelect = (label) => {
     songObj = songFilters.find(song => {
@@ -139,21 +172,31 @@ export default class Songs extends Component {
       return (
         <ListItem key={track.id} icon style={styles.listItem}>
           <Left style={{paddingLeft: 5, paddingRight: 5}}>
-            <Icon fontSize={40} active name="play" onPress={() => {
-              show(track.show_id).then(show => {
-                Controls.play(show, track);
-              });
-            }}/>
+            {this.state.track && this.state.track.id == track.id && this.state.playing ? 
+              <TouchableOpacity onPress={() => {
+                PlayerController.pause();
+              }}>
+                <Icon color="#4080B0" size={35} name="ios-pause" />
+              </TouchableOpacity>
+              :
+              <TouchableOpacity onPress={() => {
+                show(track.show_id).then(show => {
+                  PlayerController.setShowAndTrack(show, track);
+                });
+              }}>
+                <Icon color="#4080B0" size={45} name="ios-play" />
+              </TouchableOpacity>
+            }
           </Left>
-          <Body>
+          <Body style={styles.listItemContent}>
             <TouchableOpacity onPress={() => {
               Actions.show({id: track.show_id});
             }}>
-              <Text active note>{track.show_date}</Text>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>{track.show_date}</Text>
             </TouchableOpacity>
           </Body>
           <Right style={styles.listItemContent}>
-            <Text note>{isJamchart(track.id) ? "Jamcharts" : ""}</Text>
+            <Text note>{isJamchart(track.id) && "Jamcharts"}</Text>
           </Right>
           <Right style={styles.listItemContent}>
             <Text note> {msToSec(track.duration)} </Text>
@@ -170,38 +213,54 @@ export default class Songs extends Component {
     let songs = this.state.songs;
 
     return (
-      <Container>
-        <AutoComplete
-          style={styles.autocomplete}
-          suggestions={this.state.data}
-          onTyping={this.onTyping}
-          onSelect={this.onSelect}
-          placeholder="Search for a song"
-          clearButtonMode="always"
-          autoFocus={true}
-          returnKeyType="go"
-          textAlign="center"
-          clearTextOnFocus
-          autoCompleteTableTopOffset={0}
-          autoCompleteTableLeftOffset={0}
-          autoCompleteTableSizeOffset={0}
-          autoCompleteTableBorderColor="lightblue"
-          autoCompleteTableBackgroundColor="azure"
-          autoCompleteTableCornerRadius={8}
-          autoCompleteTableBorderWidth={1}
-          autoCompleteFontSize={25}
-          autoCompleteRegularFontName="Helvetica Neue"
-          autoCompleteBoldFontName="Helvetica Bold"
-          autoCompleteTableCellTextColor={"dimgray"}
-          autoCompleteRowHeight={60}
-          autoCompleteFetchRequestDelay={100}
-          maximumNumberOfAutoCompleteRows={10}
-        />
-        <ListItem key="filters" icon style={styles.listItem}>
+      <Container style={{display: 'flex'}}>
+        {Platform.OS === "ios" ?
+          <AutoComplete
+            style={styles.autocomplete}
+            suggestions={this.state.data}
+            onTyping={this.onTyping}
+            onSelect={this.onSelect}
+            placeholder="Search for a song"
+            clearButtonMode="always"
+            autoFocus={true}
+            returnKeyType="go"
+            textAlign="center"
+            clearTextOnFocus
+            autoCompleteTableTopOffset={0}
+            autoCompleteTableLeftOffset={0}
+            autoCompleteTableSizeOffset={0}
+            autoCompleteTableBorderColor="#D77186"
+            autoCompleteTableBackgroundColor="#FFF"
+            autoCompleteTableCornerRadius={8}
+            autoCompleteTableBorderWidth={1}
+            autoCompleteFontSize={20}
+            autoCompleteTableCellTextColor={"#4080B0"}
+            autoCompleteRowHeight={60}
+            autoCompleteFetchRequestDelay={100}
+            maximumNumberOfAutoCompleteRows={10}
+          />
+          :
+          <View style={{padding: 10, alignSelf: 'center'}}>
+            <ModalFilterPicker
+              visible={this.state.filterVisible}
+              autoFocus
+              onSelect={picked => {this.onFilterSelect(picked)}}
+              onCancel={() => {this.setState({filterVisible: false})}}
+              options={songFilters}
+            />
+            <Button style={styles.filterButton} onPress={() => {
+              this.setState({filterVisible: true});
+            }}>
+              <Text>Search for a song</Text>
+            </Button>
+          </View>
+        }
+
+        <ListItem key="filters" icon style={{borderColor: "#4080B0", backgroundColor: 'transparent'}}>
           <Left>
-            <Icon/>
+            <Icon color="#4080B0" size={35} name="ios-play"/>
           </Left>
-          <Body>
+          <Body style={styles.listItemContent}>
             <TouchableOpacity onPress={() => {
               this.sortSongs('date');
             }}>
@@ -213,21 +272,21 @@ export default class Songs extends Component {
             <TouchableOpacity onPress={() => {
               this.sortSongs('jamcharts');
             }}>
-              <Text active>Jamcharts</Text>
+              <Text>Jamcharts</Text>
             </TouchableOpacity>
           </Right>
           <Right style={styles.listItemContent}>
             <TouchableOpacity onPress={() => {
                   this.sortSongs('duration');
                 }}>
-              <Icon fontSize={100} name="clock"/>
+              <Icon size={35} name="ios-clock"/>
             </TouchableOpacity>
           </Right>
           <Right style={styles.listItemContent}>
             <TouchableOpacity onPress={() => {
                 this.sortSongs('likes_count');
               }}>
-              <Icon fontSize={100} active name="heart" />
+              <Icon size={35} color="#D77186" name="ios-heart" />
             </TouchableOpacity>
           </Right>
         </ListItem>
@@ -249,24 +308,33 @@ export default class Songs extends Component {
   }
 }
 
-const styles = StyleSheet.create({
+const styles = {
   autocomplete: {
     alignSelf: "stretch",
     height: 50,
     margin: 10,
+    color: "#4080B0",
     backgroundColor: "#FFF",
-    borderColor: "lightblue",
+    borderColor: "#D77186",
     textAlign: 'center',
     borderWidth: 1
   },
   listItem: {
+    borderColor: "#D77186",
     backgroundColor: 'transparent'
   },
   listItemContent: {
-    marginLeft: 5
+    borderColor: "#D77186",
+    display: 'flex',
+    marginLeft: 5,
+    marginRight: 5,
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
-    backgroundColor: "#F5FCFF"
-  }
-});
+    backgroundColor: "#FFF"
+  },
+  filterButton: {
+    backgroundColor: '#4080B0'
+  },
+};

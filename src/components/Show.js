@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, View, FlatList } from 'react-native';
-import { Container, List, ListItem, Separator, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right } from 'native-base';
+import { Platform, StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
+import { Container, List, ListItem, Separator, Header, Content, Card, CardItem, Thumbnail, Text, Button, Left, Body, Right } from 'native-base';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {randomShow, show} from './../api/phishin';
 import {trackJamcharts} from './../Filters';
 import { Actions } from 'react-native-router-flux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {CachedImage} from "react-native-img-cache";
 import EventEmitter from "react-native-eventemitter";
-import Controls from './../Controls';
+import TrackPlayer from 'react-native-track-player';
+import PlayerController from './../PlayerController';
 
 const isJamchart = (id) => {
   return (trackJamcharts.indexOf(id) !== -1);
@@ -23,11 +25,31 @@ export default class Show extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: null
+      show: null,
+      track: null,
+      loading: false,
+      playing: false
     }
+
+    EventEmitter.addListener('current', (show, track, playing) => {
+      if (this.mounted) {
+        this.setState({
+          show: show,
+          track: track,
+          playing: playing
+        });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   componentWillMount() {
+    this.mounted = true;
+    let playingTrack = PlayerController.getTrack();
+    let playing = PlayerController.getPlaying();
     let id = this.props.id;
     this.setState({loading: true})
     switch (id) {
@@ -36,19 +58,23 @@ export default class Show extends Component {
           Actions.refresh({title: show.date});
           this.setState({
             show: show,
-            loading: false
+            loading: false,
+            track: playingTrack,
+            playing: playing
           });
         });
-        
         break;
+
       default: 
         show(id).then(show => {
           Actions.refresh({title: show.date});
           this.setState({
             show: show,
-            loading: false
+            loading: false,
+            track: playingTrack,
+            playing: playing
           });
-        })
+        });
         break;
     }
   }
@@ -59,14 +85,32 @@ export default class Show extends Component {
       return track.set_name === set;
     }).map(track => {
       return (
-        <ListItem key={track.id} icon style={{backgroundColor: 'transparent'}}>
+        <ListItem key={track.id} icon style={{borderColor: "#D77186", backgroundColor: 'transparent'}}>
           <Left>
-            <Icon active name="play" onPress={() => {
-              Controls.play(show, track);
-            }}/>
+            {this.state.track && this.state.track.id == track.id && this.state.playing ? 
+              <TouchableOpacity onPress={() => {
+                PlayerController.pause();
+              }}>
+                <Icon color="#4080B0" size={30} name="ios-pause" />
+              </TouchableOpacity>
+              :
+              <TouchableOpacity onPress={() => {
+                PlayerController.setShowAndTrack(show, track);
+              }}>
+                <Icon color="#4080B0" size={30} name="ios-play" />
+              </TouchableOpacity>
+            }
           </Left>
           <Body>
-            <Text style={{fontSize: 12}}>{track.title}</Text>
+            <TouchableOpacity onPress={() => {
+              if (this.state.track && this.state.track.id == track.id && this.state.playing) {
+                PlayerController.pause();
+              } else {
+                PlayerController.setShowAndTrack(show, track);
+              }
+            }}>
+              <Text numberOfLines={1} style={{fontSize: 14}}>{track.title}</Text>
+            </TouchableOpacity>
           </Body>
           <Right style={styles.listItemContent}>
             <Text note>{isJamchart(track.id) ? "Jamcharts" : ""}</Text>
@@ -75,7 +119,7 @@ export default class Show extends Component {
             <Text note> {msToSec(track.duration)} </Text>
           </Right>
           <Right style={styles.listItemContent}>
-            <Icon active name="heart">
+            <Icon color="#D77186" name="ios-heart">
               <Text> {track.likes_count} </Text>
             </Icon>
           </Right>
@@ -89,7 +133,7 @@ export default class Show extends Component {
     return sets.map(set => {
       return (
         <View key={set}>
-          <ListItem style={{backgroundColor: 'transparent'}}>
+          <ListItem style={{borderColor: "#4080B0", backgroundColor: 'transparent'}}>
             <Body>
               <Text>{set}</Text>
             </Body>
@@ -111,25 +155,25 @@ export default class Show extends Component {
       );
     }
 
-    console.log(show);
-
     return (
-      <Container style={{backgroundColor: '#DCDDD8'}}>
+      <Container style={{backgroundColor: '#FFF'}}>
         <View style={styles.showContainer}>
           <CachedImage
             source={{uri: 'https://s3.amazonaws.com/hose/images/' + show.date + '.jpg'}}
             style={styles.showImage}
           />
           <View style={styles.showInfo}>
-            <Text style={{fontSize: 16, fontWeight: 'bold'}}>{show.date}</Text>
-            <Text>{show.venue.name}</Text>
-            <Text>{show.venue.location}</Text>
-            <Icon name="heart">
-              {show.likes_count}
-            </Icon>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>{show.date}  </Text>
+              <Icon size={20} color="#D77186" name="ios-heart"/>
+              <Text style={{color: "#D77186"}}>{show.likes_count}</Text>
+            </View>
+            <Text numberOfLines={1}>{show.venue.name}</Text>
+            <Text numberOfLines={1}>{show.venue.location}</Text>
+
             {show.tags && 
               show.tags.map(tag => {
-                return <Text key={tag}>{tag}</Text>
+                return <Text style={{color: "#4080B0"}} key={tag}>{tag}</Text>
               })
             }
           </View>
@@ -159,7 +203,7 @@ var styles = StyleSheet.create({
   showImage: {
     alignSelf: 'center',
     justifyContent: 'center',
-    height: 125,
-    width: 125,
+    height: 100,
+    width: 100,
   }
 });

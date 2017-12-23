@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import {View, TouchableOpacity, AppState} from 'react-native';
 import {Footer, Text, ListItem, Right, Body, Left, Content} from 'native-base';
-import Controls from './../Controls';
 import Dimensions from 'Dimensions';
 import EventEmitter from "react-native-eventemitter";
 import Icon from 'react-native-vector-icons/Ionicons';
-import TrackPlayer, {ProgressComponent} from 'react-native-track-player';
+import TrackPlayer from 'react-native-track-player';
 import { Actions } from 'react-native-router-flux';
 import {CachedImage} from "react-native-img-cache";
-import MarqueeText from 'react-native-marquee';
 import Modal from 'react-native-modal'
+import Slider from "react-native-slider";
+import PlayerController from './../PlayerController';
 
 const msToSec = (time) => {
   var minutes = Math.floor(time / 60000);
@@ -17,63 +17,32 @@ const msToSec = (time) => {
   return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 }
 
+const secToMin = (time) => {
+  return ~~(time / 60) + ":" + (time % 60 < 10 ? "0" : "") + time % 60;
+}
+
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-let mapTracksForPlayer = (show) => {
-  let tracks = show.tracks;
-  return tracks.map(track => ({
-    id: track.id.toString(),
-    url: track.mp3,
-    date: show.date,
-    title: track.title,
-    artist: 'Phish',
-    album: show.date,
-    genre: 'Phish',
-    artwork: 'https://s3.amazonaws.com/hose/images/' + show.date + '.jpg'
-  }));
-}
-
-export default class Player extends ProgressComponent {
+export default class Player extends TrackPlayer.ProgressComponent {
   constructor(props) {
     super(props);
     this.state = {
       playing: false,
-      loading: true,
-      currentShow: null,
-      tracks: null,
-      currentTrack: null,
+      show: null,
+      track: null,
       appState: AppState.currentState,
       isModalVisible: false
     }
 
-    EventEmitter.addListener('play', (show, track) => {
-      let currentShow = this.state.currentShow;
-      let currentTrack = this.state.currentTrack;
-
-      if (!currentShow) {
-        return this.setShowAndTrack(show, track);
+    EventEmitter.addListener('current', (show, track, playing) => {
+      if (this.mounted) {
+        this.setState({
+          show: show,
+          track: track,
+          playing: playing
+        });
       }
-
-      if (currentShow.id === show.id) {
-        if (track.id === currentTrack.id) {
-          return;
-        } else {
-          TrackPlayer.skip(track.id.toString());
-          this.setState({currentTrack: track});
-        }
-      } else {
-        this.setShowAndTrack(show, track);
-      }
-
-      this.setState({
-        playing: true
-      });
-    });
-
-    EventEmitter.addListener('pause', () => {
-      this.setState({playing: false});
-      TrackPlayer.pause();
     });
   }
 
@@ -83,13 +52,13 @@ export default class Player extends ProgressComponent {
 
   handleAppStateChange = (nextAppState) => {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-      let show = this.state.currentShow;
+      let show = this.state.show;
       if (show && show.tracks) {
         TrackPlayer.getCurrentTrack().then(track => {
           let current = show.tracks.find(showTrack => {
             return track === showTrack.id.toString();
           });
-          this.setState({currentTrack: current});
+          this.setState({track: current});
         });
       }
     } else {
@@ -98,51 +67,13 @@ export default class Player extends ProgressComponent {
   }
 
   componentDidMount() {
+    this.mounted = true;
     AppState.addEventListener('change', this.handleAppStateChange);
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     AppState.removeEventListener('change', this.handleAppStateChange);
-  }
-
-  setShowAndTrack = async (show, track) => {
-    let currentShow = this.state.currentShow;
-    let currentTrack = this.state.currentTrack;
-    let tracksForPlayer = mapTracksForPlayer(show);
-
-    TrackPlayer.setupPlayer({
-      maxCacheFiles: 40,
-      maxBuffer: 0,
-      minBuffer: 0
-    }).then(async () => {
-      TrackPlayer.updateOptions({
-        compactCapabilities: [
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-        ],
-        capabilities: [
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-        ]
-      });
-
-      await TrackPlayer.add(tracksForPlayer);
-
-      TrackPlayer.skip(track.id.toString());
-      TrackPlayer.play();
-      console.log(TrackPlayer);
-    });
-
-    this.setState({
-      currentShow: show,
-      currentTrack: track,
-      playing: true,
-      tracks: tracksForPlayer
-    });
   }
 
   renderTracksForSet = (show, set) => {
@@ -150,21 +81,19 @@ export default class Player extends ProgressComponent {
       return track.set_name === set;
     }).map(track => {
       return (
-        <ListItem key={track.id} icon style={{backgroundColor: 'transparent'}}>
+        <ListItem key={track.id} style={{borderColor: "#D77186", backgroundColor: 'transparent'}} onPress={() => {
+          PlayerController.setShowAndTrack(show, track);
+          this._hideModal();
+        }}>
           <Left>
-            <Icon active name="ios-play" onPress={() => {
-              Controls.play(show, track);
-            }}/>
+            <Text numberOfLines={1} style={{fontSize: 14, color: "#FFF"}}>{track.title}</Text>
           </Left>
           <Body>
-            <Text style={{fontSize: 12}}>{track.title}</Text>
+            <Text style={{color: "#FFF"}}> {msToSec(track.duration)} </Text>
           </Body>
           <Right>
-            <Text note> {msToSec(track.duration)} </Text>
-          </Right>
-          <Right>
-            <Icon active name="ios-heart">
-              <Text> {track.likes_count} </Text>
+            <Icon active color={"#D77186"} name="ios-heart">
+              <Text style={{color: "#D77186"}}> {track.likes_count} </Text>
             </Icon>
           </Right>
         </ListItem>
@@ -177,9 +106,9 @@ export default class Player extends ProgressComponent {
     return sets.map(set => {
       return (
         <View key={set}>
-          <ListItem style={{backgroundColor: 'transparent'}}>
+          <ListItem style={{borderColor: "#4080B0", backgroundColor: 'transparent'}}>
             <Body>
-              <Text>{set}</Text>
+              <Text style={{color: "#FFF"}}>{set}</Text>
             </Body>
           </ListItem>
           {this.renderTracksForSet(show, set)}
@@ -189,14 +118,14 @@ export default class Player extends ProgressComponent {
   }
 
   render() {
-    let show = this.state.currentShow;
-    let track = this.state.currentTrack;
+    let show = this.state.show;
+    let track = this.state.track;
 
     if (!show || !track) {
       return null;
     }
 
-    let showTracks = this.state.currentShow.tracks;
+    let tracks = this.state.show.tracks;
 
     return (
       <View style={{display: 'flex'}}>
@@ -213,110 +142,141 @@ export default class Player extends ProgressComponent {
         </Modal>
         <Footer style={styles.footer}>
           <View style={styles.footerContainer}>
-            <View style={styles.imageContainer}>
-              <CachedImage
-                source={{uri: 'https://s3.amazonaws.com/hose/images/' + show.date + '.jpg'}}
-                style={styles.showImage}
-              />
-            </View>
             <View style={styles.center}>
-              <Text style={{fontSize: 12, fontWeight: 'bold'}} numberOfLines={1}> {track.title} </Text>
-              <MarqueeText
-                style={{ fontSize: 12 }}
-                duration={8000}
-                marqueeOnStart
-                loop
-                marqueeDelay={4000}
-                marqueeResetDelay={0}
-              >
-                {show.date} - {show.venue.name}, {show.venue.location}
-              </MarqueeText>
+              <TouchableOpacity style={styles.showInfo} onPress={() => {
+                Actions.show({id: show.id, title: show.date});
+              }}>
+                <Text style={{fontSize: 14, fontWeight: 'bold'}} numberOfLines={1}>{track.title}</Text>
+                <Text note style={{fontSize: 12}} numberOfLines={1}>{show.date} - {show.venue.name}, {show.venue.location}</Text>
+              </TouchableOpacity>
+
               <View style={styles.controls}>
-                <Icon name="ios-skip-backward"
-                  size={40}
-                  color="#61A2DA" 
+                <TouchableOpacity
                   style={styles.controlButton}
                   onPress={() => {
-                    TrackPlayer.skipToPrevious().then(() => {
-                      TrackPlayer.play();
-                    });
-                    TrackPlayer.getCurrentTrack().then(track => {
-                      let current = showTracks.find(showTrack => {
-                        return track === showTrack.id.toString();
-                      })
-                      this.setState({currentTrack: current});
-                    });
+                    PlayerController.skipToPrevious();
                   }}
-                />
+                >
+                  <Icon name="ios-skip-backward"
+                    size={40}
+                    color="#4080B0" 
+                  />
+                </TouchableOpacity>
                 {this.state.playing ?
-                  <TouchableOpacity onPress={() => {
-                    this.setState({playing: false});
-                    TrackPlayer.pause();
-                  }}>
+                  <TouchableOpacity 
+                    style={styles.controlButton}
+                    onPress={() => {
+                      PlayerController.pause();
+                    }}>
                     <Icon name="ios-pause"
-                      size={40} 
-                      color="#61A2DA" 
-                      style={styles.controlButton}
+                      size={35} 
+                      color="#4080B0" 
                     />
                   </TouchableOpacity>
                   :
-                  <TouchableOpacity onPress={() => {
-                    this.setState({playing: true});
-                    TrackPlayer.play();
-                  }}>
-                    <Icon name="ios-play" 
-                      size={40} 
-                      color="#61A2DA" 
-                      style={styles.controlButton}
-                    />
+                  <TouchableOpacity 
+                    style={styles.controlButton}
+                    onPress={() => {
+                      PlayerController.play();
+                    }}>
+                    <Icon name="ios-play" size={35} color="#4080B0"/>
                   </TouchableOpacity>
                 }
-                <Icon name="ios-skip-forward"
-                  size={40}
-                  color="#61A2DA"
+                <TouchableOpacity
                   style={styles.controlButton}
                   onPress={() => {
-                    TrackPlayer.skipToNext().then(() => {
-                      TrackPlayer.play();
-                    });
-                    TrackPlayer.getCurrentTrack().then(track => {
-                      let current = showTracks.find(showTrack => {
-                        return track === showTrack.id.toString();
-                      })
-                      this.setState({currentTrack: current});
-                    });
-                  }}
-                />
+                    PlayerController.skipToNext();
+                  }}>
+                  <Icon name="ios-skip-forward" size={35} color="#4080B0"/>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.controlButton}
+                  onPress={() => {
+                    this._showModal();
+                  }}>
+                  <Icon 
+                    name="ios-list-outline"
+                    color="#4080B0" 
+                    size={40}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.sliderContainer}>
+                <Text note style={styles.sliderTimerPosition}> {secToMin(~~this.state.position)} </Text>
+                <View style={styles.slider}>
+                  <Slider
+                    minimumTrackTintColor="#4080B0"
+                    trackStyle={styles.track}
+                    thumbStyle={styles.thumb}
+                    minimumValue={0}
+                    maximumValue={~~this.state.duration}
+                    value={~~this.state.position}
+                    onValueChange={value => {
+                      TrackPlayer.seekTo(value);
+                      this.setState({position: value})
+                    }}
+                  />
+                </View>
+                <Text note style={styles.sliderTimerDuration}> {secToMin(~~this.state.duration)} </Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.playlistContainer}
-              onPress={() => {
-                this._showModal();
-              }}>
-              <Icon 
-                name="ios-list-outline"
-                color="#61A2DA" 
-                size={60}
-              />
-            </TouchableOpacity>
           </View>
         </Footer>
       </View>
-    )
+    );
   }
 }
 
 const styles = {
+  sliderContainer: {
+    flexDirection: 'row',
+    width: '90%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+  },
+  sliderTimerPosition: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    color: '#4080B0'
+  },
+  sliderTimerDuration: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    color: '#4080B0'
+  },
+  slider: {
+    flex: 1,
+    alignItems: 'stretch',
+    justifyContent: 'center'
+  },
+  thumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 15,
+    backgroundColor: '#D77186',
+    shadowColor: 'black',
+    shadowOffset: {width: 0, height: 2},
+    shadowRadius: 2,
+    shadowOpacity: 0.35,
+  },
+  track: {
+    height: 10,
+    borderRadius: 2,
+    backgroundColor: 'white',
+    borderColor: '#4080B0',
+    borderWidth: 1,
+  },
   modalContainer: {
     height: height / 1.5,
     justifyContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',
-    backgroundColor: '#61A2DA'
+    backgroundColor: '#4080B0'
   },
   footer: {
-    backgroundColor: '#DCDDD8',
-    height: 75
+    backgroundColor: '#FFF',
+    height: 100
   },
   footerContainer: {
     display: 'flex',
@@ -327,30 +287,20 @@ const styles = {
   },
   controls: {
     flex: 1,
+    paddingTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center'
   },
-  imageContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-start'
+  showInfo: {
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   center: {
     flex: 3,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center'
-  },
-  playlistContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  showImage: {
-    width: 75,
-    height: 75
   },
   controlButton: {
     paddingLeft: 20,
