@@ -45,7 +45,8 @@ export default class Shows extends Component {
       filterVisible: false,
       filterOptions: null,
       filterType: null,
-      loadMoreShows: false
+      loadMoreShows: false,
+      filterTitle: ""
     }
   }
   
@@ -214,6 +215,18 @@ export default class Shows extends Component {
     );
   }
 
+  renderOption = (option) => {
+    return (
+      <TouchableOpacity style={{padding: 15, borderWidth: 1, borderColor: "#D77186"}}
+        onPress={() => {
+          this.onSelect(option.label);
+        }}
+      >
+        <Text style={{fontSize: 16, fontWeight: 'bold', color: "#4080B0"}}> {option.label} </Text>
+      </TouchableOpacity>
+    )
+  }
+
   render() {
     let shows = this.state.shows;
     
@@ -228,9 +241,17 @@ export default class Shows extends Component {
     return (
       <Container style={{backgroundColor: '#FFF'}}>
         <ModalFilterPicker
+          titleTextStyle={{color: "#FFF", fontSize: 20, fontWeight: 'bold', padding: 5}}
+          title={this.state.filterTitle}
+          cancelButtonStyle={{backgroundColor: "#4080B0", padding: 20, borderRadius: 15}}
+          cancelButtonTextStyle={{color: "#FFF"}}
+          androidUnderlineColor="#D77186"
+          placeholderTextColor="#4080B0"
+          filterTextInputStyle={{color: "#4080B0", padding: 20, fontSize: 18, fontWeight: 'bold'}}
           visible={this.state.filterVisible}
           onSelect={(picked) => {this.onSelect(picked)}}
           onCancel={this.onCancel}
+          renderOption={this.renderOption}
           options={this.state.filterOptions ? this.state.filterOptions : []}
         />
         
@@ -241,16 +262,19 @@ export default class Shows extends Component {
             <Text>Shows</Text>
           </Button>
           <Button style={styles.filterButton} title="Years" onPress={() => {
+            this.setState({filterTitle: "Years"});
             this.onShow(yearFilters, 'years');
           }}>
             <Text>Years</Text>
           </Button>
           <Button style={styles.filterButton} onPress={() => {
+            this.setState({filterTitle: "Venues"})
             this.onShow(venueFilters, 'venues');
           }}>
             <Text>Venues</Text>
           </Button>
           <Button style={styles.filterButton} onPress={() => {
+            this.setState({filterTitle: "Tours"})
             this.onShow(tourFilters, 'tours');
           }}>
             <Text>Tours</Text>

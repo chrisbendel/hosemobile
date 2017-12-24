@@ -152,7 +152,7 @@ export default class Songs extends Component {
   onFilterSelect = (picked) => {
     songObj = songFilters.find(song => {
       console.log(picked, song);
-      return picked === song.key;
+      return picked === song.label;
     });
     Actions.refresh({title: songObj.label});
     this.setState({filterVisible: false});
@@ -209,6 +209,18 @@ export default class Songs extends Component {
     });
   }
 
+  renderOption = (option) => {
+    return (
+      <TouchableOpacity style={{padding: 15, borderWidth: 1, borderColor: "#D77186"}}
+        onPress={() => {
+          this.onFilterSelect(option.label);
+        }}
+      >
+        <Text style={{fontSize: 16, fontWeight: 'bold', color: "#4080B0"}}> {option.label} </Text>
+      </TouchableOpacity>
+    )
+  }
+
   render() {
     let songs = this.state.songs;
 
@@ -242,8 +254,17 @@ export default class Songs extends Component {
           :
           <View style={{padding: 10, alignSelf: 'center'}}>
             <ModalFilterPicker
+              titleTextStyle={{color: "#FFF", fontSize: 20, fontWeight: 'bold', padding: 5}}
+              title={"Songs"}
+              cancelButtonStyle={{backgroundColor: "#4080B0", padding: 20, borderRadius: 15}}
+              cancelButtonTextStyle={{color: "#FFF"}}
+              androidUnderlineColor="#D77186"
+              placeholderTextColor="#4080B0"
+              filterTextInputStyle={{color: "#4080B0", padding: 20, fontSize: 18, fontWeight: 'bold'}}
               visible={this.state.filterVisible}
+              renderOption={this.renderOption}
               autoFocus
+              placeholder="Search for a song"
               onSelect={picked => {this.onFilterSelect(picked)}}
               onCancel={() => {this.setState({filterVisible: false})}}
               options={songFilters}
