@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, TouchableOpacity, Platform } from 'react-native';
 import {Container, Header, Item, Input, Button, Text, List, ListItem, Left, Body, Right, Content} from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {songFilters, trackJamcharts} from './../Filters';
+import {songFilters, trackJamcharts} from './../filters';
 import {tracksForSong, show} from './../api/phishin';
 import AutoComplete from 'react-native-autocomplete';
 import Spinner from 'react-native-loading-spinner-overlay';

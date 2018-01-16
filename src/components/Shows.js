@@ -22,7 +22,7 @@ import {
 import {shows, showsForYear, showsToday, showsForVenue, showsForTour, show} from './../api/phishin';
 import ModalFilterPicker from 'react-native-modal-filter-picker';
 import { Actions } from 'react-native-router-flux';
-import {yearFilters, tourFilters, venueFilters, sortByOptions, showJamcharts} from './../Filters';
+import {yearFilters, tourFilters, venueFilters, sortByOptions, showJamcharts} from './../filters';
 import {CachedImage} from "react-native-img-cache";
 import Spinner from 'react-native-loading-spinner-overlay';
 import PlayerController from './../PlayerController';

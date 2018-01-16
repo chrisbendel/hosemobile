@@ -3,7 +3,7 @@ import { Platform, StyleSheet, View, FlatList, TouchableOpacity } from 'react-na
 import { Container, List, ListItem, Separator, Header, Content, Card, CardItem, Thumbnail, Text, Button, Left, Body, Right } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {randomShow, show} from './../api/phishin';
-import {trackJamcharts} from './../Filters';
+import {trackJamcharts} from './../filters';
 import { Actions } from 'react-native-router-flux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {CachedImage} from "react-native-img-cache";
